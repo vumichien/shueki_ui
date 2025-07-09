@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スマートプロフィット：管理者向け管理ページ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f7faff;
+            color: #334155;
+        }
+        .sidebar {
+            width: 280px; /* Slightly wider for admin features */
+            background-color: #1a202c; /* Even darker for admin */
+            color: #ecf0f1;
+            min-height: 100vh;
+            padding: 1.5rem 0;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: #2d3748; /* Lighter on hover */
+            border-left: 4px solid #f6ad55; /* Amber accent for admin */
+        }
+        .content-area {
+            flex-grow: 1;
+            padding: 2rem;
+            background-color: #f7faff;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body class="flex">
+    <!-- Sidebar -->
+    <aside class="sidebar shadow-lg">
+        <div class="px-6 mb-8">
+            <h1 class="text-2xl font-bold text-amber-300">スマプロ Admin</h1>
+            <p class="text-sm text-gray-400">システム管理者向け</p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#client-management" class="sidebar-link active">クライアント管理</a>
+                    <ul class="ml-8 text-sm">
+                        <li><a href="#client-search" class="sidebar-link">クライアント検索</a></li>
+                        <li><a href="#client-list" class="sidebar-link">クライアント一覧</a></li>
+                        <li><a href="#new-client" class="sidebar-link">クライアントの新規登録 / アカウント発行</a></li>
+                    </ul>
+                </li>
+                <li><a href="#client-details" class="sidebar-link">クライアント詳細</a></li>
+                <li><a href="#system-status" class="sidebar-link">システム全体の状態</a>
+                    <ul class="ml-8 text-sm">
+                        <li><a href="#execution-history" class="sidebar-link">実行履歴</a></li>
+                        <li><a href="#logs" class="sidebar-link">ログの確認</a></li>
+                    </ul>
+                </li>
+                <li><a href="#admin-account-settings" class="sidebar-link">アカウント設定</a>
+                     <ul class="ml-8 text-sm">
+                        <li><a href="#admin-password-change" class="sidebar-link">パスワード変更</a></li>
+                        <li><a href="#admin-new-account" class="sidebar-link">新規アカウント発行</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" class="sidebar-link text-red-400">ログアウト</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="content-area">
+        <header class="flex justify-between items-center mb-8 pb-4 border-b border-gray-200">
+            <h2 id="main-content-title" class="text-2xl font-semibold text-gray-800">クライアント管理</h2>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-600">ようこそ、管理者様！</span>
+            </div>
+        </header>
+
+        <section id="client-management-section" class="content-section">
+            <div class="card p-6 mb-6">
+                <h3 class="text-xl font-bold mb-4">クライアント検索</h3>
+                <div class="flex space-x-4">
+                    <input type="text" placeholder="クライアント名、ID..." class="flex-grow p-2 border border-gray-300 rounded-md">
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">検索</button>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <h3 class="text-xl font-bold mb-4">クライアント一覧</h3>
+                <div class="table-responsive">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">クライアントID</th>
+                                <th scope="col" class="px-6 py-3">クライアント名</th>
+                                <th scope="col" class="px-6 py-3">登録日</th>
+                                <th scope="col" class="px-6 py-3">ステータス</th>
+                                <th scope="col" class="px-6 py-3">アクション</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4">CL001</td>
+                                <td class="px-6 py-4">株式会社ABC商事</td>
+                                <td class="px-6 py-4">2023-01-15</td>
+                                <td class="px-6 py-4 text-green-600">有効</td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:underline">詳細</button>
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50 border-b">
+                                <td class="px-6 py-4">CL002</td>
+                                <td class="px-6 py-4">合同会社XYZ物産</td>
+                                <td class="px-6 py-4">2023-03-01</td>
+                                <td class="px-6 py-4 text-gray-500">無効</td>
+                                <td class="px-6 py-4">
+                                    <button class="text-blue-600 hover:underline">詳細</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="client-details-section" class="content-section hidden">
+            <h3 class="text-xl font-bold mb-4">クライアント詳細</h3>
+            <div class="card p-6">
+                <p class="text-gray-600 mb-4">選択されたクライアントの詳細情報と管理オプション。</p>
+                <ul class="space-y-2 text-gray-700">
+                    <li>**実行ステータス:** 正常</li>
+                    <li>**アカウント:** <span class="text-green-600">有効</span> <button class="ml-4 bg-red-500 text-white text-sm px-3 py-1 rounded hover:bg-red-600">無効にする</button></li>
+                    <li>**パスワード:** <button class="ml-4 bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded hover:bg-gray-300">リセット</button></li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="system-status-section" class="content-section hidden">
+            <h3 class="text-xl font-bold mb-4">システム全体の状態</h3>
+            <div class="card p-6">
+                <p class="text-gray-600">システム全体の実行ステータスとログを確認します。</p>
+                <!-- System status and log content -->
+            </div>
+        </section>
+
+        <section id="admin-account-settings-section" class="content-section hidden">
+            <h3 class="text-xl font-bold mb-4">アカウント設定</h3>
+            <div class="card p-6">
+                <p class="text-gray-600">管理者アカウントのパスワード変更や新規発行を行います。</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            const mainContentTitle = document.getElementById('main-content-title');
+
+            function showSection(id) {
+                contentSections.forEach(section => {
+                    section.classList.add('hidden');
+                });
+                const targetSection = document.getElementById(`${id}-section`);
+                if (targetSection) {
+                    targetSection.classList.remove('hidden');
+                    // Update title based on the top-level parent link's text if it's a sub-link
+                    let titleText = document.querySelector(`.sidebar-link[href="#${id}"]`).textContent;
+                    // For sub-links, you might want to adjust the displayed title
+                    if (id.includes('-')) {
+                         const parentLink = document.querySelector(`.sidebar-link[href="#${id.split('-')[0]}-${id.split('-')[1]}"]`);
+                         if (parentLink) {
+                             titleText = parentLink.textContent.split(' ')[0] + ' > ' + titleText;
+                         }
+                    }
+                    mainContentTitle.textContent = titleText;
+                }
+            }
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    sidebarLinks.forEach(item => item.classList.remove('active'));
+                    this.classList.add('active');
+                    const sectionId = this.getAttribute('href').substring(1);
+                    showSection(sectionId);
+                });
+            });
+
+            // Default to client management on load
+            showSection('client-management');
+
+            // Handle specific sub-link content updates if necessary (e.g., for client details, logs)
+            // Example:
+            // document.querySelector('.sidebar-link[href="#client-search"]').addEventListener('click', () => {
+            //     // Logic to display search UI if different from default client management
+            // });
+        });
+    </script>
+</body>
+</html>

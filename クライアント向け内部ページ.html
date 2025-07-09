@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スマートプロフィット：クライアント向け内部ページ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f7faff;
+            color: #334155;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50; /* Dark slate for sidebar */
+            color: #ecf0f1; /* Light gray text */
+            min-height: 100vh;
+            padding: 1.5rem 0;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: #34495e; /* Slightly lighter dark slate on hover/active */
+            border-left: 4px solid #10b981; /* Green accent */
+        }
+        .content-area {
+            flex-grow: 1;
+            padding: 2rem;
+            background-color: #f7faff;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            margin-top: 1rem;
+        }
+        .data-table-container {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+        .data-table th, .data-table td {
+            padding: 0.75rem;
+            white-space: nowrap;
+            text-align: right;
+            min-width: 100px; /* Adjust as needed */
+        }
+        .data-table th:first-child, .data-table td:first-child {
+            text-align: left;
+            min-width: 180px; /* For item names */
+        }
+        .data-table thead th {
+            background-color: #e2e8f0; /* slate-200 */
+            font-weight: bold;
+        }
+        .data-table tbody tr:nth-child(odd) {
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .data-table tbody tr:nth-child(even) {
+            background-color: #ffffff; /* white */
+        }
+        .data-table tbody tr.highlight-row {
+            background-color: #bfdbfe; /* blue-200 */
+            font-weight: bold;
+        }
+        .data-table .highlight-col {
+            background-color: #dbeafe; /* blue-100 */
+            font-weight: bold;
+        }
+        .data-table .highlight-col.green-text {
+            color: #10b981; /* green-500 */
+        }
+        .data-table .highlight-col.red-text {
+            color: #ef4444; /* red-500 */
+        }
+    </style>
+</head>
+<body class="flex">
+    <!-- サイドバー -->
+    <aside class="sidebar shadow-lg">
+        <div class="px-6 mb-8">
+            <h1 class="text-2xl font-bold text-teal-300">スマプロ</h1>
+            <p class="text-sm text-gray-400">クライアント向け</p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#dashboard" class="sidebar-link active">ダッシュボード</a></li>
+                <li><a href="#reports" class="sidebar-link">収益レポート</a>
+                    <ul class="ml-8 text-sm">
+                        <li><a href="#daily-report" class="sidebar-link">毎日の収益レポート</a></li>
+                        <li><a href="#monthly-report" class="sidebar-link">指定月の収益レポート</a></li>
+                        <li><a href="#periodic-report" class="sidebar-link">通期の収益レポート</a></li>
+                        <li><a href="#excel-download" class="sidebar-link">指定収益レポートをExcel形式で出力</a></li>
+                    </ul>
+                </li>
+                <li><a href="#settings" class="sidebar-link">システム設定</a>
+                    <ul class="ml-8 text-sm">
+                        <li><a href="#rms-settings" class="sidebar-link">RMS情報等の設定</a></li>
+                        <li><a href="#crossmall-settings" class="sidebar-link">クロスモール情報等の設定</a></li>
+                        <li><a href="#default-settings" class="sidebar-link">収益計算のデフォルト設定 (送料・人件費等)</a></li>
+                        <li><a href="#accounting-settings" class="sidebar-link">会計期間設定</a></li>
+                    </ul>
+                </li>
+                <li><a href="#options" class="sidebar-link">オプション機能</a></li>
+                <li><a href="#account" class="sidebar-link">アカウント設定</a>
+                    <ul class="ml-8 text-sm">
+                        <li><a href="#password-change" class="sidebar-link">パスワード変更</a></li>
+                        <li><a href="#new-account" class="sidebar-link">新規アカウント発行</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" class="sidebar-link text-red-400">ログアウト</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- メインコンテンツ -->
+    <div class="content-area">
+        <header class="flex justify-between items-center mb-8 pb-4 border-b border-gray-200">
+            <h2 id="main-content-title" class="text-2xl font-semibold text-gray-800">ダッシュボード</h2>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-600">ようこそ、クライアント様！</span>
+                <select id="date-selector" class="p-2 border border-gray-300 rounded-md">
+                    <!-- Dates will be populated by JS -->
+                </select>
+                <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition">設定</button>
+            </div>
+        </header>
+
+        <section id="dashboard-section" class="content-section">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="card text-center">
+                    <h4 class="text-gray-500 text-sm font-bold">総売上</h4>
+                    <p id="kpi-total-sales" class="text-3xl font-bold text-gray-800">¥ 0</p>
+                </div>
+                <div class="card text-center">
+                    <h4 class="text-gray-500 text-sm font-bold">営業利益</h4>
+                    <p id="kpi-operating-profit" class="text-3xl font-bold text-green-600">¥ 0</p>
+                </div>
+                <div class="card text-center">
+                    <h4 class="text-gray-500 text-sm font-bold">営業利益率</h4>
+                    <p id="kpi-operating-profit-ratio" class="text-3xl font-bold text-green-600">0.0%</p>
+                </div>
+            </div>
+            <div class="card p-6">
+                <h3 class="text-xl font-bold mb-4">選択日における収益詳細</h3>
+                <div class="chart-container">
+                    <canvas id="dailyRevenueChart"></canvas>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table w-full border-collapse">
+                        <thead>
+                            <tr>
+                                <th class="border-b border-gray-300">項目名</th>
+                                <!-- Headers for dates will be dynamically generated -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data rows will be dynamically generated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="reports-section" class="content-section hidden">
+            <h3 class="text-xl font-bold mb-4">収益レポート</h3>
+            <div class="card p-6">
+                <p class="text-gray-600 mb-4">選択された期間の収益レポートが表示されます。</p>
+                <div id="report-content">
+                    <!-- Report content will be dynamically loaded here -->
+                    <p class="text-gray-500">レポートの種類を選択してください。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="settings-section" class="content-section hidden">
+            <h3 class="text-xl font-bold mb-4">システム設定</h3>
+            <div class="card p-6">
+                <p class="text-gray-600">システム設定を管理します。</p>
+                <!-- Settings forms/details will go here -->
+            </div>
+        </section>
+        
+        <section id="options-section" class="content-section hidden">
+            <h3 class="text-xl font-bold mb-4">オプション機能</h3>
+            <div class="card p-6">
+                <p class="text-gray-600">追加のオプション機能はこちらで設定できます。</p>
+            </div>
+        </section>
+
+        <section id="account-section" class="content-section hidden">
+            <h3 class="text-xl font-bold mb-4">アカウント設定</h3>
+            <div class="card p-6">
+                <p class="text-gray-600">アカウント情報とパスワードを管理します。</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar and content section logic variables
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            const mainContentTitle = document.getElementById('main-content-title');
+            
+            const dateSelector = document.getElementById('date-selector');
+            let dailyRevenueChart;
+
+            // Sample data from the provided image (converted to a more usable structure)
+            // Values are in Yen (円) and percentages are just numbers (e.g., 52.15 for 52.15%)
+            const dailyData = {
+                '2025/6/13': {
+                    '売上': 56671, '売上原価': 56571, '原価率': 99.82, '売上総利益': 100, '総利益比率': 0.18,
+                    '送料': 611, '送料比率': 1.08, '支払い手数料': 284, '手数料比率': 0.50, '注文連動比合計': 895, '連動比率': 1.58,
+                    '広告費': 1278, '広告比率': 2.26, '販売促進費': 2700, '販促比率': 4.77, '広告販売促進費合計': 3978, '広告販促比率': 7.02,
+                    '人件費': 9489, '人件費率': 16.74, '共通費': 4326, '共通比率': 7.63,
+                    '営業利益': 415, '営業利益比率': 0.73
+                },
+                '2025/6/12': {
+                    '売上': 98983, '売上原価': 53032, '原価率': 53.57, '売上総利益': 45951, '総利益比率': 46.42,
+                    '送料': 6049, '送料比率': 6.11, '支払い手数料': 4256, '手数料比率': 4.30, '注文連動比合計': 10305, '連動比率': 10.41,
+                    '広告費': 10088, '広告比率': 10.19, '販売促進費': 817, '販促比率': 0.83, '広告販売促進費合計': 10905, '広告販促比率': 11.02,
+                    '人件費': 8247, '人件費率': 8.33, '共通費': 5755, '共通比率': 5.81,
+                    '営業利益': 1700, '営業利益比率': 1.72
+                },
+                '2025/6/11': {
+                    '売上': 97089, '売上原価': 56374, '原価率': 58.07, '売上総利益': 40715, '総利益比率': 41.94,
+                    '送料': 5662, '送料比率': 5.83, '支払い手数料': 4389, '手数料比率': 4.52, '注文連動比合計': 10051, '連動比率': 10.35,
+                    '広告費': 11782, '広告比率': 12.14, '販売促進費': 2722, '販促比率': 2.80, '広告販売促進費合計': 14504, '広告販促比率': 14.94,
+                    '人件費': 11327, '人件費率': 11.67, '共通費': 5924, '共通比率': 6.10,
+                    '営業利益': 3500, '営業利益比率': 3.60
+                },
+                '2025/6/10': {
+                    '売上': 94650, '売上原価': 46825, '原価率': 49.47, '売上総利益': 47825, '総利益比率': 50.53,
+                    '送料': 4947, '送料比率': 5.23, '支払い手数料': 4195, '手数料比率': 4.43, '注文連動比合計': 9142, '連動比率': 9.66,
+                    '広告費': 10294, '広告比率': 10.88, '販売促進費': 1157, '販促比率': 1.22, '広告販売促進費合計': 11451, '広告販促比率': 12.10,
+                    '人件費': 11198, '人件費率': 11.83, '共通費': 4239, '共通比率': 4.48,
+                    '営業利益': 12000, '営業利益比率': 12.68
+                },
+                '2025/6/9': {
+                    '売上': 119812, '売上原価': 57400, '原価率': 47.91, '売上総利益': 62412, '総利益比率': 52.09,
+                    '送料': 8896, '送料比率': 7.42, '支払い手数料': 3568, '手数料比率': 2.98, '注文連動比合計': 12464, '連動比率': 10.40,
+                    '広告費': 9750, '広告比率': 8.14, '販売促進費': 3063, '販促比率': 2.56, '広告販売促進費合計': 12813, '広告販促比率': 10.69,
+                    '人件費': 12791, '人件費率': 10.68, '共通費': 4373, '共通比率': 3.65,
+                    '営業利益': 20000, '営業利益比率': 16.70
+                },
+                 '2025/6/8': {
+                    '売上': 119530, '売上原価': 55000, '原価率': 45.93, '売上総利益': 64530, '総利益比率': 54.00,
+                    '送料': 8680, '送料比率': 7.26, '支払い手数料': 5356, '手数料比率': 4.48, '注文連動比合計': 14036, '連動比率': 11.74,
+                    '広告費': 11300, '広告比率': 9.45, '販売促進費': 3380, '販促比率': 2.83, '広告販売促進費合計': 14680, '広告販促比率': 12.28,
+                    '人件費': 13660, '人件費率': 11.43, '共通費': 4940, '共通比率': 4.13,
+                    '営業利益': 17000, '営業利益比率': 14.22
+                },
+                '2025/6/7': {
+                    '売上': 95935, '売上原価': 56147, '原価率': 58.53, '売上総利益': 39788, '総利益比率': 41.47,
+                    '送料': 5831, '送料比率': 6.08, '支払い手数料': 3400, '手数料比率': 3.54, '注文連動比合計': 9231, '連動比率': 9.62,
+                    '広告費': 14810, '広告比率': 15.44, '販売促進費': 4640, '販促比率': 4.84, '広告販売促進費合計': 19450, '広告販促比率': 20.27,
+                    '人件費': 8418, '人件費率': 8.77, '共通費': 4358, '共通比率': 4.54,
+                    '営業利益': -115, '営業利益比率': -0.12
+                },
+                '2025/6/6': {
+                    '売上': 94636, '売上原価': 38788, '原価率': 40.99, '売上総利益': 55848, '総利益比率': 59.01,
+                    '送料': 6366, '送料比率': 6.73, '支払い手数料': 3400, '手数料比率': 3.59, '注文連動比合計': 9766, '連動比率': 10.32,
+                    '広告費': 14950, '広告比率': 15.80, '販売促進費': 3690, '販促比率': 3.90, '広告販売促進費合計': 18640, '広告販促比率': 19.69,
+                    '人件費': 8788, '人件費率': 9.29, '共通費': 4060, '共通比率': 4.29,
+                    '営業利益': 20000, '営業利益比率': 21.13
+                },
+                '2025/6/5': {
+                    '売上': 112103, '売上原価': 52150, '原価率': 46.52, '売上総利益': 59953, '総利益比率': 53.48,
+                    '送料': 7370, '送料比率': 6.57, '支払い手数料': 3422, '手数料比率': 3.05, '注文連動比合計': 10792, '連動比率': 9.63,
+                    '広告費': 11350, '広告比率': 10.12, '販売促進費': 3913, '販促比率': 3.49, '広告販売促進費合計': 15263, '広告販促比率': 13.62,
+                    '人件費': 11520, '人件費率': 10.28, '共通費': 4389, '共通比率': 3.91,
+                    '営業利益': 18000, '営業利益比率': 16.05
+                },
+                '2025/6/4': {
+                    '売上': 110403, '売上原価': 51611, '原価率': 46.75, '売上総利益': 58792, '総利益比率': 53.25,
+                    '送料': 7782, '送料比率': 7.05, '支払い手数料': 4800, '手数料比率': 4.35, '注文連動比合計': 12582, '連動比率': 11.40,
+                    '広告費': 11530, '広告比率': 10.44, '販売促進費': 1163, '販促比率': 1.05, '広告販売促進費合計': 12693, '広告販促比率': 11.50,
+                    '人件費': 12580, '人件費率': 11.40, '共通費': 6170, '共通比率': 5.59,
+                    '営業利益': 15000, '営業利益比率': 13.59
+                },
+                 '2025/6/3': {
+                    '売上': 101243, '売上原価': 57426, '原価率': 56.72, '売上総利益': 43817, '総利益比率': 43.28,
+                    '送料': 7701, '送料比率': 7.61, '支払い手数料': 5468, '手数料比率': 5.40, '注文連動比合計': 13169, '連動比率': 13.01,
+                    '広告費': 11340, '広告比率': 11.20, '販売促進費': 3969, '販促比率': 3.92, '広告販売促進費合計': 15309, '広告販促比率': 15.12,
+                    '人件費': 10046, '人件費率': 9.92, '共通費': 6448, '共通比率': 6.37,
+                    '営業利益': 7000, '営業利益比率': 6.91
+                },
+                '2025/6/2': {
+                    '売上': 82732, '売上原価': 39591, '原価率': 47.86, '売上総利益': 43141, '総利益比率': 52.14,
+                    '送料': 6544, '送料比率': 7.91, '支払い手数料': 6661, '手数料比率': 8.05, '注文連動比合計': 13205, '連動比率': 15.96,
+                    '広告費': 9384, '広告比率': 11.34, '販売促進費': 9369, '販促比率': 11.32, '広告販売促進費合計': 18753, '広告販促比率': 22.67,
+                    '人件費': 7808, '人件費率': 9.44, '共通費': 2512, '共通比率': 3.04,
+                    '営業利益': -3783, '営業利益比率': -4.57
+                }
+            };
+
+            const itemNames = [
+                '売上', '売上原価', '原価率', '売上総利益', '総利益比率',
+                '送料', '送料比率', '支払い手数料', '手数料比率', '注文連動比合計', '連動比率',
+                '広告費', '広告比率', '販売促進費', '販促比率', '広告販売促進費合計', '広告販促比率',
+                '人件費', '人件費率', '共通費', '共通比率',
+                '営業利益', '営業利益比率'
+            ];
+
+            const ctx = document.getElementById('dailyRevenueChart').getContext('2d');
+            let dailyChart;
+
+            // Populate date selector
+            const dates = Object.keys(dailyData).sort((a, b) => new Date(b) - new Date(a)); // Sort descending
+            dates.forEach(date => {
+                const option = document.createElement('option');
+                option.value = date;
+                option.textContent = date;
+                dateSelector.appendChild(option);
+            });
+
+            function formatCurrency(value) {
+                if (typeof value !== 'number') return value;
+                return `¥ ${value.toLocaleString()}`;
+            }
+
+            function formatPercentage(value) {
+                 if (typeof value !== 'number') return value;
+                 return `${value.toFixed(2)}%`;
+            }
+
+            function updateKPIs(date) {
+                const data = dailyData[date];
+                if (data) {
+                    document.getElementById('kpi-total-sales').textContent = formatCurrency(data['売上']);
+                    document.getElementById('kpi-operating-profit').textContent = formatCurrency(data['営業利益']);
+                    document.getElementById('kpi-operating-profit-ratio').textContent = formatPercentage(data['営業利益率']);
+                }
+            }
+
+            function updateChartAndTable(selectedDate) {
+                const labels = Object.keys(dailyData).sort((a, b) => new Date(a) - new Date(b)); // Sort ascending for chart
+                const selectedDateIndex = labels.indexOf(selectedDate);
+                const salesData = labels.map(date => dailyData[date]['売上']);
+                const profitData = labels.map(date => dailyData[date]['営業利益']);
+
+                // Chart.js update
+                if (dailyChart) {
+                    dailyChart.destroy();
+                }
+
+                dailyChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '売上 (円)',
+                            data: salesData,
+                            borderColor: '#3b82f6', /* blue-500 */
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            tension: 0.3,
+                            fill: true,
+                            pointBackgroundColor: labels.map((date, index) => index === selectedDateIndex ? '#ef4444' : '#3b82f6'), // Highlight selected point
+                            pointBorderColor: labels.map((date, index) => index === selectedDateIndex ? '#b91c1c' : '#3b82f6'),
+                            pointRadius: labels.map((date, index) => index === selectedDateIndex ? 8 : 3),
+                            pointHoverRadius: labels.map((date, index) => index === selectedDateIndex ? 10 : 5)
+                        }, {
+                            label: '営業利益 (円)',
+                            data: profitData,
+                            borderColor: '#10b981', /* green-500 */
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            tension: 0.3,
+                            fill: true,
+                            pointBackgroundColor: labels.map((date, index) => index === selectedDateIndex ? '#ef4444' : '#10b981'), // Highlight selected point
+                            pointBorderColor: labels.map((date, index) => index === selectedDateIndex ? '#b91c1c' : '#10b981'),
+                            pointRadius: labels.map((date, index) => index === selectedDateIndex ? 8 : 3),
+                            pointHoverRadius: labels.map((date, index) => index === selectedDateIndex ? 10 : 5)
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                ticks: {
+                                    autoSkip: false, // Ensure all labels are shown
+                                    callback: function(val, index) {
+                                        // Highlight the selected date on the X-axis
+                                        return labels[index] === selectedDate ? `▶ ${labels[index]}` : labels[index];
+                                    },
+                                    font: function(context) {
+                                        if (context.tick.label === `▶ ${selectedDate}`) {
+                                            return {
+                                                weight: 'bold',
+                                                color: '#ef4444' // red-500
+                                            };
+                                        }
+                                        return {};
+                                    }
+                                }
+                            },
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += formatCurrency(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Update data table
+                const tableHead = document.querySelector('.data-table thead tr');
+                const tableBody = document.querySelector('.data-table tbody');
+
+                // Clear previous headers and body
+                tableHead.innerHTML = '<th class="border-b border-gray-300">項目名</th>';
+                tableBody.innerHTML = '';
+
+                // Add date headers
+                labels.forEach((date, index) => {
+                    const th = document.createElement('th');
+                    th.classList.add('border-b', 'border-gray-300');
+                    if (date === selectedDate) {
+                        th.classList.add('highlight-col');
+                    }
+                    th.textContent = date.replace('2025/', ''); // Shorten year
+                    tableHead.appendChild(th);
+                });
+
+                // Add data rows
+                itemNames.forEach(itemName => {
+                    const tr = document.createElement('tr');
+                    if (itemName.includes('利益') || itemName.includes('率')) { // Highlight profit/ratio rows
+                        tr.classList.add('highlight-row');
+                    }
+                    const thItemName = document.createElement('td');
+                    thItemName.classList.add('border-b', 'border-gray-200', 'font-medium', 'text-gray-900');
+                    thItemName.textContent = itemName;
+                    tr.appendChild(thItemName);
+
+                    labels.forEach(date => {
+                        const td = document.createElement('td');
+                        td.classList.add('border-b', 'border-gray-200');
+                        if (date === selectedDate) {
+                            td.classList.add('highlight-col');
+                            if (itemName === '営業利益' || itemName === '売上総利益') {
+                                td.classList.add(dailyData[date][itemName] >= 0 ? 'green-text' : 'red-text');
+                            }
+                            if (itemName.includes('率')) {
+                                td.classList.add('green-text'); // Assuming ratios are generally positive goals
+                            }
+                        }
+                        
+                        let displayValue = dailyData[date][itemName];
+                        if (itemName.includes('率')) {
+                            displayValue = formatPercentage(displayValue);
+                        } else {
+                            displayValue = formatCurrency(displayValue);
+                        }
+                        td.textContent = displayValue;
+                        tr.appendChild(td);
+                    });
+                    tableBody.appendChild(tr);
+                });
+
+                // Scroll table to show selected date if it's not visible
+                const selectedDateColumnIndex = labels.indexOf(selectedDate) + 1; // +1 for the item name column
+                const selectedCell = tableHead.children[selectedDateColumnIndex];
+                if (selectedCell) {
+                    selectedCell.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            }
+
+            // Event listeners
+            dateSelector.addEventListener('change', function() {
+                const selectedDate = this.value;
+                updateKPIs(selectedDate);
+                updateChartAndTable(selectedDate);
+            });
+
+            // Initial load
+            const initialDate = dates[0]; // Set to the latest date
+            if (initialDate) {
+                dateSelector.value = initialDate; // Set dropdown value
+                updateKPIs(initialDate);
+                updateChartAndTable(initialDate);
+            }
+
+            // Sidebar and content section logic (from previous version)
+            // Removed duplicate declarations, using the ones at the top of the DOMContentLoaded function.
+            function showSection(id) {
+                contentSections.forEach(section => {
+                    section.classList.add('hidden');
+                });
+                const targetSection = document.getElementById(`${id}-section`);
+                if (targetSection) {
+                    targetSection.classList.remove('hidden');
+                    mainContentTitle.textContent = document.querySelector(`.sidebar-link[href="#${id}"]`).textContent.split(' ')[0];
+                }
+            }
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    sidebarLinks.forEach(item => item.classList.remove('active'));
+                    this.classList.add('active');
+                    const sectionId = this.getAttribute('href').substring(1);
+                    showSection(sectionId);
+                });
+            });
+
+            // Handle sub-navigation clicks for reports and settings
+            document.querySelector('.sidebar-link[href="#daily-report"]').addEventListener('click', () => {
+                document.getElementById('report-content').innerHTML = '<h4 class="font-semibold text-lg mb-2">毎日の収益レポート</h4><p class="text-gray-700">今日の収益データが表示されます。</p>';
+            });
+            document.querySelector('.sidebar-link[href="#monthly-report"]').addEventListener('click', () => {
+                document.getElementById('report-content').innerHTML = '<h4 class="font-semibold text-lg mb-2">指定月の収益レポート</h4><p class="text-gray-700">月を選択して詳細レポートを表示します。</p>';
+            });
+            document.querySelector('.sidebar-link[href="#excel-download"]').addEventListener('click', () => {
+                document.getElementById('report-content').innerHTML = '<h4 class="font-semibold text-lg mb-2">指定収益レポートをExcel形式で出力</h4><p class="text-gray-700">Excel形式でデータをダウンロードできます。</p><button class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 hover:bg-blue-600">ダウンロード</button>';
+            });
+        });
+    </script>
+</body>
+</html>
