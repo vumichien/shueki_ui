@@ -1,20 +1,18 @@
 <template>
   <div class="logo" :class="logoClass">
-    <img v-if="showImage" :src="logoSrc" :alt="alt" class="logo-image" />
+    <img v-if="showImage" :src="imageSrc" :alt="alt" class="logo-image" />
     <div v-else class="logo-icon">📊</div>
     <span v-if="showText" class="logo-text">{{ text }}</span>
   </div>
 </template>
 
 <script>
-import logoImage from '/assets/logo.png'
-
 export default {
   name: 'Logo',
   props: {
     imageSrc: {
       type: String,
-      default: ''
+      default: './assets/logo.png'
     },
     text: {
       type: String,
@@ -49,9 +47,6 @@ export default {
         `logo--${this.size}`,
         `logo--${this.theme}`
       ]
-    },
-    logoSrc() {
-      return this.imageSrc || logoImage
     }
   }
 }

@@ -18,7 +18,6 @@
 <script>
 import Header from '../components/organisms/Header.vue'
 import FloatingSymbols from '../components/organisms/FloatingSymbols.vue'
-import backgroundImage from '/assets/background.jpg'
 
 export default {
   name: 'LoginTemplate',
@@ -29,7 +28,7 @@ export default {
   computed: {
     backgroundStyle() {
       return {
-        background: `url(${backgroundImage}) center/cover no-repeat`
+        background: `url('./assets/background.jpg') center/cover no-repeat`
       }
     }
   }
