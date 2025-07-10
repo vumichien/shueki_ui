@@ -2,7 +2,7 @@
   <div class="login-template">
     <Header />
     
-    <div class="main-content">
+    <div class="main-content" :style="backgroundStyle">
       <div class="background-container">
         <div class="background-overlay"></div>
         <FloatingSymbols />
@@ -18,12 +18,20 @@
 <script>
 import Header from '../components/organisms/Header.vue'
 import FloatingSymbols from '../components/organisms/FloatingSymbols.vue'
+import backgroundImage from '/assets/background.jpg'
 
 export default {
   name: 'LoginTemplate',
   components: {
     Header,
     FloatingSymbols
+  },
+  computed: {
+    backgroundStyle() {
+      return {
+        background: `url(${backgroundImage}) center/cover no-repeat`
+      }
+    }
   }
 }
 </script>
@@ -38,7 +46,6 @@ export default {
 .main-content {
   flex: 1;
   position: relative;
-  background: url('/assets/background.jpg') center/cover no-repeat;
 }
 
 .background-container {

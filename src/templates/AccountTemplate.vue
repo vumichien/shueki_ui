@@ -3,7 +3,7 @@
     <div class="account-layout">
       <Sidebar @logout="handleLogout" />
       
-      <div class="main-section">
+      <div class="main-section" :style="backgroundStyle">
         <Header :user="currentUser" @logout="handleLogout" />
         
         <div class="background-container">
@@ -34,6 +34,7 @@
 import Header from '../components/organisms/Header.vue'
 import Sidebar from '../components/organisms/Sidebar.vue'
 import FloatingSymbols from '../components/organisms/FloatingSymbols.vue'
+import backgroundImage from '/assets/background.jpg'
 
 export default {
   name: 'AccountTemplate',
@@ -55,6 +56,15 @@ export default {
         return userData ? JSON.parse(userData) : { name: 'クライアント' }
       } catch (error) {
         return { name: 'クライアント' }
+      }
+    },
+    backgroundStyle() {
+      return {
+        background: `linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)`,
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
       }
     }
   },
@@ -101,11 +111,6 @@ export default {
   flex: 1;
   margin-left: 250px;
   position: relative;
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-  background-image: url('/assets/background.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 .background-container {

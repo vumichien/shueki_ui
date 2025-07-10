@@ -1,10 +1,9 @@
 <template>
   <header class="header">
     <div class="header-container">
-      <Logo 
-        :image-src="'/assets/logo.png'"
-        text="Smartweb"
-        size="large"
+              <Logo 
+          text="Smartweb"
+          size="large"
         theme="light"
         :show-text="false"
       />
