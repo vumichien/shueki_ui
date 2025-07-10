@@ -34,6 +34,7 @@
 import Header from '../components/organisms/Header.vue'
 import Sidebar from '../components/organisms/Sidebar.vue'
 import FloatingSymbols from '../components/organisms/FloatingSymbols.vue'
+import backgroundImage from '../assets/background.jpg'
 
 export default {
   name: 'AccountTemplate',
@@ -60,7 +61,7 @@ export default {
     backgroundStyle() {
       return {
         background: `linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)`,
-        backgroundImage: `url('./assets/background.jpg')`,
+        backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'

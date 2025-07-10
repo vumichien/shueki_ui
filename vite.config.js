@@ -6,6 +6,7 @@ export default defineConfig({
   base: './', // Use relative base path for better compatibility
   build: {
     assetsDir: 'assets',
+    assetsInlineLimit: 0, // Force all assets to be separate files
     rollupOptions: {
       output: {
         assetFileNames: 'assets/[name]-[hash][extname]'
