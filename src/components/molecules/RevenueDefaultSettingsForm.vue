@@ -127,13 +127,41 @@
           <div class="form-content">
             <div class="cost-rate-group">
               <div class="radio-group-vertical">
-                <Radio 
-                  v-model="formData.costRate" 
-                  value="manual_input" 
-                  name="costRate"
-                >
-                  原価率入力
-                </Radio>
+                <div class="radio-with-input">
+                  <Radio 
+                    v-model="formData.costRate" 
+                    value="manual_input" 
+                    name="costRate"
+                  >
+                    原価率入力
+                  </Radio>
+                  <div v-if="formData.costRate === 'manual_input'" class="input-with-checkbox">
+                    <div class="input-group">
+                      <Input 
+                        v-model="formData.costRateValue" 
+                        type="number"
+                        class="cost-input"
+                      />
+                      <span class="percent-unit">%</span>
+                    </div>
+                    <div class="checkbox-group">
+                      <Checkbox 
+                        v-model="formData.costRateDefault"
+                        class="default-checkbox"
+                      >
+                        デフォルト値
+                      </Checkbox>
+                      <div class="input-group">
+                        <Input 
+                          v-model="formData.costRateDefaultValue" 
+                          type="number"
+                          class="cost-input"
+                        />
+                        <span class="percent-unit">%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div class="radio-with-button">
                   <Radio 
                     v-model="formData.costRate" 
@@ -143,6 +171,7 @@
                     商品ごとの原価使用
                   </Radio>
                   <Button 
+                    v-if="formData.costRate === 'product_cost'"
                     variant="primary" 
                     size="small" 
                     class="csv-import-btn"
@@ -251,7 +280,10 @@ export default {
         laborCost: '10000',
         laborCostDefault: true,
         laborCostDefaultValue: '10000',
-        costRate: 'product_cost',
+        costRate: 'manual_input',
+        costRateValue: '70',
+        costRateDefault: true,
+        costRateDefaultValue: '70',
         shippingCost: '20000',
         shippingCostDefault: true,
         shippingCostDefaultValue: '20000',
@@ -374,6 +406,12 @@ export default {
   font-weight: 500;
 }
 
+.percent-unit {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
 .checkbox-group {
   display: flex;
   align-items: center;
@@ -401,6 +439,13 @@ export default {
   display: flex;
   align-items: center;
   gap: 45px;
+}
+
+.radio-with-input {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
 }
 
 .csv-import-btn {
@@ -470,6 +515,10 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+  }
+  
+  .radio-with-input {
+    width: 100%;
   }
   
   .checkbox-group {
