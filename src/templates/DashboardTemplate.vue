@@ -13,7 +13,7 @@
             </div>
             
             <div class="header-right">
-              <span class="welcome-message">ようこそ、クライアント様！</span>
+              <span class="welcome-message">ようこそ、{{ currentUser.name }}さん！</span>
               <div class="date-range">
                 <DateRangePicker 
                   :startDate="startDate" 

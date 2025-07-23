@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginPage from '../pages/LoginPage.vue'
+import AdminLoginPage from '../pages/AdminLoginPage.vue'
 import HomePage from '../pages/HomePage.vue'
 import RevenueReportPage from '../pages/RevenueReportPage.vue'
 import SystemPage from '../pages/SystemPage.vue'
+import SystemOverviewPage from '../pages/SystemOverviewPage.vue'
 import SystemRmsPage from '../pages/SystemRmsPage.vue'
 import SystemRevenueDefaultPage from '../pages/SystemRevenueDefaultPage.vue'
 import AccountPage from '../pages/AccountPage.vue'
@@ -13,6 +15,17 @@ const routes = [
     path: '/',
     name: 'Login',
     component: LoginPage
+  },
+  {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: AdminLoginPage
+  },
+  {
+    path: '/admin/system-overview',
+    name: 'AdminSystemOverview',
+    component: SystemOverviewPage,
+    meta: { requiresAdminAuth: true }
   },
   {
     path: '/home',
@@ -72,15 +85,29 @@ const router = createRouter({
 // Navigation guard to check authentication
 router.beforeEach((to, from, next) => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
+  const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true'
   
-  if (to.matched.some(record => record.meta.requiresAuth)) {
+  // Check for admin routes
+  if (to.matched.some(record => record.meta.requiresAdminAuth)) {
+    if (!isAdminLoggedIn) {
+      next({ name: 'AdminLogin' })
+    } else {
+      next()
+    }
+  }
+  // Check for user routes
+  else if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isLoggedIn) {
       next({ name: 'Login' })
     } else {
       next()
     }
-  } else {
-    if (isLoggedIn && to.name === 'Login') {
+  } 
+  // Handle login redirects
+  else {
+    if (isAdminLoggedIn && to.name === 'AdminLogin') {
+      next({ name: 'AdminSystemOverview' })
+    } else if (isLoggedIn && to.name === 'Login') {
       next({ name: 'Dashboard' })
     } else {
       next()

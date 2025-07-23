@@ -1,46 +1,35 @@
 <template>
-  <div class="sidebar">
+  <div class="admin-sidebar">
     <div class="sidebar-header">
       <div class="logo-section">
-        <h2>スマプロ</h2>
-      </div>
-      <div class="store-select-section" style="margin-top: 12px;">
-        <select v-model="selectedStore" @change="handleStoreChange" class="store-select">
-          <option value="楽天店舗">楽天店舗</option>
-          <option value="Amazon店舗">Amazon店舗</option>
-        </select>
+        <h2>スマプロ Admin</h2>
+        <span>Smartweb</span>
       </div>
     </div>
     
     <nav class="sidebar-nav">
       <ul class="nav-list">
         <li class="nav-item">
-          <router-link to="/dashboard" class="nav-link" active-class="active">
-            <i class="fas fa-tachometer-alt icon"></i>
-            <span>ダッシュボード</span>
+          <router-link to="/admin/system-overview" class="nav-link" active-class="active">
+            <i class="fas fa-chart-bar icon"></i>
+            <span>システム全体の状態</span>
           </router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/revenue-report" class="nav-link" active-class="active">
-            <i class="fas fa-chart-line icon"></i>
-            <span>通期の収益レポート</span>
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <div class="nav-link nav-parent" @click="toggleSubmenu('system')">
-            <i class="fas fa-cogs icon"></i>
-            <span>システム</span>
-            <i class="fas fa-chevron-down chevron-icon" :class="{ 'rotated': openSubmenus.system }"></i>
+          <div class="nav-link nav-parent" @click="toggleSubmenu('client')">
+            <i class="fas fa-users icon"></i>
+            <span>クライアント管理</span>
+            <i class="fas fa-chevron-down chevron-icon" :class="{ 'rotated': openSubmenus.client }"></i>
           </div>
-          <ul class="sub-nav-list" :class="{ 'open': openSubmenus.system }">
+          <ul class="sub-nav-list" :class="{ 'open': openSubmenus.client }">
             <li class="sub-nav-item">
-              <router-link to="/system/rms" class="sub-nav-link">
-                RMS情報等の設定
+              <router-link to="/admin/clients" class="sub-nav-link">
+                クライアント一覧
               </router-link>
             </li>
             <li class="sub-nav-item">
-              <router-link to="/system/revenue-default" class="sub-nav-link">
-                収益計算のデフォルト設定
+              <router-link to="/admin/clients/new" class="sub-nav-link">
+                クライアント新規登録
               </router-link>
             </li>
           </ul>
@@ -53,8 +42,13 @@
           </div>
           <ul class="sub-nav-list" :class="{ 'open': openSubmenus.account }">
             <li class="sub-nav-item">
-              <router-link to="/account/password" class="sub-nav-link">
+              <router-link to="/admin/account/password" class="sub-nav-link">
                 パスワード変更
+              </router-link>
+            </li>
+            <li class="sub-nav-item">
+              <router-link to="/admin/account/new" class="sub-nav-link">
+                新規アカウント発行
               </router-link>
             </li>
           </ul>
@@ -67,80 +61,68 @@
         </li>
       </ul>
     </nav>
+    
+    <!-- Admin info section -->
+    <div class="admin-info">
+      <p>ようこそ、管理者様！</p>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Sidebar',
+  name: 'AdminSidebar',
   data() {
     return {
       openSubmenus: {
-        system: false,
+        client: false,
         account: false
-      },
-      selectedStore: '楽天店舗',
+      }
     }
   },
   methods: {
     toggleSubmenu(menuName) {
       this.openSubmenus[menuName] = !this.openSubmenus[menuName]
       // Save to localStorage to persist state
-      localStorage.setItem('sidebar_submenu_' + menuName, this.openSubmenus[menuName])
-      console.log(`Toggled ${menuName} to:`, this.openSubmenus[menuName])
+      localStorage.setItem('admin_sidebar_submenu_' + menuName, this.openSubmenus[menuName])
     },
     loadSubmenuStates() {
       // Load submenu states from localStorage
-      const systemState = localStorage.getItem('sidebar_submenu_system')
-      const accountState = localStorage.getItem('sidebar_submenu_account')
+      const clientState = localStorage.getItem('admin_sidebar_submenu_client')
+      const accountState = localStorage.getItem('admin_sidebar_submenu_account')
       
-      if (systemState !== null) {
-        this.openSubmenus.system = systemState === 'true'
+      if (clientState !== null) {
+        this.openSubmenus.client = clientState === 'true'
       }
       if (accountState !== null) {
         this.openSubmenus.account = accountState === 'true'
       }
-      
-      console.log('Loaded submenu states:', this.openSubmenus)
     },
     handleLogout() {
-      this.$emit('logout')
-    },
-    handleStoreChange() {
-      localStorage.setItem('sidebar_selected_store', this.selectedStore)
+      this.$emit('admin-logout')
     }
   },
   created() {
     // Load states before component is mounted
     this.loadSubmenuStates()
-    // Load selected store from localStorage
-    const savedStore = localStorage.getItem('sidebar_selected_store')
-    if (savedStore) {
-      this.selectedStore = savedStore
-    }
   },
   mounted() {
-    // Check current route and open appropriate submenu on initial load (only if not already set)
+    // Check current route and open appropriate submenu on initial load
     const currentPath = this.$route.path
-    if (currentPath.startsWith('/system/') && !this.openSubmenus.system) {
-      this.openSubmenus.system = true
-      localStorage.setItem('sidebar_submenu_system', 'true')
-    } else if (currentPath.startsWith('/account/') && !this.openSubmenus.account) {
+    if (currentPath.startsWith('/admin/clients') && !this.openSubmenus.client) {
+      this.openSubmenus.client = true
+      localStorage.setItem('admin_sidebar_submenu_client', 'true')
+    } else if (currentPath.startsWith('/admin/account/') && !this.openSubmenus.account) {
       this.openSubmenus.account = true
-      localStorage.setItem('sidebar_submenu_account', 'true')
+      localStorage.setItem('admin_sidebar_submenu_account', 'true')
     }
-    
-    console.log('Sidebar mounted with states:', this.openSubmenus)
   },
-  beforeUnmount() {
-    console.log('Sidebar unmounting with states:', this.openSubmenus)
-  },
-  emits: ['logout']
+  emits: ['admin-logout']
 }
 </script>
 
 <style scoped>
-.sidebar {
+.admin-sidebar {
   width: 250px;
   height: 100vh;
   background-color: #2c3e50;
@@ -309,30 +291,31 @@ export default {
   color: #ff6b6b;
 }
 
-.store-select-section {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
+.admin-info {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  text-align: center;
 }
-.store-select {
-  width: 90%;
-  padding: 6px 8px;
-  border-radius: 4px;
-  border: 1px solid #b0bec5;
-  font-size: 1rem;
-  margin-top: 4px;
-  background: #fff;
-  color: #222;
+
+.admin-info p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #bdc3c7;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .sidebar {
+  .admin-sidebar {
     transform: translateX(-100%);
     height: 100vh;
   }
   
-  :global(body.mobile-menu-open) .sidebar {
+  :global(body.admin-mobile-menu-open) .admin-sidebar {
     transform: translateX(0);
   }
 }

@@ -113,6 +113,29 @@ export function validatePassword(password) {
   return { valid: true, message: '' }
 }
 
+// Admin-specific authentication
+export function authenticateAdmin(email, password) {
+  const user = users.find(u => u.email === email && u.role === 'admin')
+  
+  if (!user) {
+    return { success: false, error: '管理者アカウントが見つかりません' }
+  }
+  
+  if (user.password !== password) {
+    return { success: false, error: 'パスワードが間違っています' }
+  }
+  
+  return { 
+    success: true, 
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role
+    }
+  }
+}
+
 // Reset users to default (for development/testing)
 export function resetUsersToDefault() {
   users = [...defaultUsers]

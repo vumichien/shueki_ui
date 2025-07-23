@@ -1,6 +1,11 @@
 <template>
   <LoginTemplate>
     <LoginForm @login-success="handleLoginSuccess" />
+    <div class="admin-login-link">
+      <router-link to="/admin/login" class="admin-link">
+        管理者ログイン
+      </router-link>
+    </div>
   </LoginTemplate>
 </template>
 
@@ -25,4 +30,24 @@ export default {
     }
   }
 }
-</script> 
+</script>
+
+<style scoped>
+.admin-login-link {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.admin-link {
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.admin-link:hover {
+  color: #1e3a8a;
+  text-decoration: underline;
+}
+</style> 

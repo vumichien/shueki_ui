@@ -1,255 +1,202 @@
 <template>
   <div class="revenue-default-settings-form">
+    <!-- 会計期間設定 Section -->
+    <div class="settings-card">
+      <div class="card-header">
+        <h3 class="card-title">会計期間設定</h3>
+      </div>
+      <div class="form-table">
+        <div class="form-row">
+          <div class="form-label">
+            <span class="label-text">会計年度開始月</span>
+            <span class="required-badge">必須</span>
+          </div>
+          <div class="form-content">
+            <Select 
+              v-model="formData.fiscalYearStart" 
+              :options="fiscalYearOptions"
+              class="fiscal-year-select"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 手入力項目設定 Section -->
     <div class="settings-card">
       <div class="card-header">
         <h3 class="card-title">手入力項目設定</h3>
       </div>
-      
       <div class="form-table">
-        <div class="form-row">
-          <div class="form-label">
-            <span class="label-text">出店プラン</span>
-          </div>
-          <div class="form-content">
-            <div class="radio-group-vertical">
-              <Radio 
-                v-model="formData.storePlan" 
-                value="ganbatte_plan" 
-                name="storePlan"
-              >
-                がんばれ！プラン
-              </Radio>
-              <Radio 
-                v-model="formData.storePlan" 
-                value="standard_plan" 
-                name="storePlan"
-              >
-                スタンダードプラン
-              </Radio>
-              <Radio 
-                v-model="formData.storePlan" 
-                value="mega_shop_plan" 
-                name="storePlan"
-              >
-                メガショッププラン
-              </Radio>
-            </div>
-          </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-label">
-            <span class="label-text">R-SNS</span>
-          </div>
-          <div class="form-content">
-            <div class="radio-group">
-              <Radio 
-                v-model="formData.rsns" 
-                value="using" 
-                name="rsns"
-              >
-                使用している
-              </Radio>
-              <Radio 
-                v-model="formData.rsns" 
-                value="not_using" 
-                name="rsns"
-              >
-                使用していない
-              </Radio>
-            </div>
-          </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-label">
-            <span class="label-text">RMS商品一括編集</span>
-          </div>
-          <div class="form-content">
-            <div class="radio-group">
-              <Radio 
-                v-model="formData.rmsBulkEdit" 
-                value="using" 
-                name="rmsBulkEdit"
-              >
-                使用している
-              </Radio>
-              <Radio 
-                v-model="formData.rmsBulkEdit" 
-                value="not_using" 
-                name="rmsBulkEdit"
-              >
-                使用していない
-              </Radio>
-            </div>
-          </div>
-        </div>
-        
+        <!-- 人件費 Row -->
         <div class="form-row">
           <div class="form-label">
             <span class="label-text">人件費</span>
           </div>
-          <div class="form-content">
-            <div class="input-with-checkbox">
-              <div class="input-group">
-                <Input 
-                  v-model="formData.laborCost" 
-                  type="number"
-                  class="cost-input"
-                />
-                <span class="currency-unit">円</span>
-              </div>
-              <div class="checkbox-group">
-                <Checkbox 
-                  v-model="formData.laborCostDefault"
-                  class="default-checkbox"
-                >
-                  デフォルト値
-                </Checkbox>
-                <div class="input-group">
-                  <Input 
-                    v-model="formData.laborCostDefaultValue" 
-                    type="number"
-                    class="cost-input"
-                  />
-                  <span class="currency-unit">円</span>
-                </div>
-              </div>
+          <div class="form-content cost-row">
+            <div class="cost-input-group">
+              <Input 
+                v-model="formData.laborCost" 
+                type="number"
+                class="cost-input"
+                placeholder="10,000"
+              />
+              <span class="unit">円</span>
             </div>
+            <span class="period-label">有効期間</span>
+            <div class="date-input-group">
+              <Input 
+                v-model="formData.laborCostDate" 
+                type="date"
+                class="date-input"
+              />
+            </div>
+            <Button 
+              variant="primary" 
+              size="small" 
+              class="add-btn"
+              :disabled="showLaborCostExtraRow"
+              @click="showLaborCostExtraRow = true"
+            >
+              追加
+            </Button>
           </div>
         </div>
-        
-        <div class="form-row">
+        <!-- 人件費 Extra Row -->
+        <div v-if="showLaborCostExtraRow" class="form-row labor-extra-row">
+          <div class="form-label"></div>
+          <div class="form-content cost-row">
+            <div class="cost-input-group">
+              <Input 
+                v-model="laborCostExtra.amount" 
+                type="number"
+                class="cost-input"
+                placeholder="10,000"
+              />
+              <span class="unit">円</span>
+            </div>
+            <span class="period-label">有効期間</span>
+            <div class="date-input-group">
+              <Input 
+                v-model="laborCostExtra.date" 
+                type="date"
+                class="date-input"
+              />
+            </div>
+            <Button 
+              variant="danger" 
+              size="small" 
+              class="delete-btn"
+              @click="removeLaborCostExtra"
+            >
+              削除
+            </Button>
+          </div>
+        </div>
+
+        <!-- 原価率 Row -->
+        <div class="form-row cost-rate-row">
           <div class="form-label">
             <span class="label-text">原価率</span>
           </div>
-          <div class="form-content">
-            <div class="cost-rate-group">
-              <div class="radio-group-vertical">
-                <div class="radio-with-input">
-                  <Radio 
-                    v-model="formData.costRate" 
-                    value="manual_input" 
-                    name="costRate"
-                  >
-                    原価率入力
-                  </Radio>
-                  <div v-if="formData.costRate === 'manual_input'" class="input-with-checkbox">
-                    <div class="input-group">
-                      <Input 
-                        v-model="formData.costRateValue" 
-                        type="number"
-                        class="cost-input"
-                      />
-                      <span class="percent-unit">%</span>
-                    </div>
-                    <div class="checkbox-group">
-                      <Checkbox 
-                        v-model="formData.costRateDefault"
-                        class="default-checkbox"
-                      >
-                        デフォルト値
-                      </Checkbox>
-                      <div class="input-group">
-                        <Input 
-                          v-model="formData.costRateDefaultValue" 
-                          type="number"
-                          class="cost-input"
-                        />
-                        <span class="percent-unit">%</span>
-                      </div>
-                    </div>
-                  </div>
+          <div class="form-content cost-rate-content">
+            <div class="cost-rate-options">
+              <div class="radio-with-input-row">
+                <Radio 
+                  v-model="formData.costRateType" 
+                  value="manual" 
+                  name="costRateType"
+                >
+                  原価率入力
+                </Radio>
+                <div v-if="formData.costRateType === 'manual'" class="cost-input-group">
+                  <Input 
+                    v-model="formData.costRateValue" 
+                    type="number"
+                    class="cost-input"
+                    placeholder="70"
+                  />
+                  <span class="unit">%</span>
                 </div>
-                <div class="radio-with-button">
-                  <Radio 
-                    v-model="formData.costRate" 
-                    value="product_cost" 
-                    name="costRate"
-                  >
-                    商品ごとの原価使用
-                  </Radio>
-                  <Button 
-                    v-if="formData.costRate === 'product_cost'"
-                    variant="primary" 
-                    size="small" 
-                    class="csv-import-btn"
-                    @click="handleCsvImport"
-                  >
-                    CSVインポート
-                  </Button>
-                </div>
+              </div>
+              <div class="radio-option">
+                <Radio 
+                  v-model="formData.costRateType" 
+                  value="product" 
+                  name="costRateType"
+                >
+                  商品ごとの原価使用
+                </Radio>
               </div>
             </div>
           </div>
         </div>
-        
+
+        <!-- 送料 Row -->
         <div class="form-row">
           <div class="form-label">
             <span class="label-text">送料</span>
           </div>
-          <div class="form-content">
-            <div class="input-with-checkbox">
-              <div class="input-group">
-                <Input 
-                  v-model="formData.shippingCost" 
-                  type="number"
-                  class="cost-input"
-                />
-                <span class="currency-unit">円</span>
-              </div>
-              <div class="checkbox-group">
-                <Checkbox 
-                  v-model="formData.shippingCostDefault"
-                  class="default-checkbox"
-                >
-                  デフォルト値
-                </Checkbox>
-                <div class="input-group">
-                  <Input 
-                    v-model="formData.shippingCostDefaultValue" 
-                    type="number"
-                    class="cost-input"
-                  />
-                  <span class="currency-unit">円</span>
-                </div>
-              </div>
+          <div class="form-content cost-row">
+            <div class="cost-input-group">
+              <Input 
+                v-model="formData.shippingCost" 
+                type="number"
+                class="cost-input"
+                placeholder="20,000"
+              />
+              <span class="unit">円</span>
             </div>
+            <span class="period-label">有効期間</span>
+            <div class="date-input-group">
+              <Input 
+                v-model="formData.shippingCostDate" 
+                type="date"
+                class="date-input"
+              />
+            </div>
+            <Button 
+              variant="primary" 
+              size="small" 
+              class="add-btn"
+              @click="addShippingCost"
+            >
+              追加
+            </Button>
           </div>
         </div>
-        
+
+        <!-- 共通費 Row -->
         <div class="form-row">
           <div class="form-label">
             <span class="label-text">共通費</span>
           </div>
-          <div class="form-content">
-            <div class="input-with-checkbox">
-              <div class="input-group">
-                <Input 
-                  v-model="formData.commonCost" 
-                  type="number"
-                  class="cost-input"
-                />
-                <span class="currency-unit">円</span>
-              </div>
-              <div class="checkbox-group">
-                <Checkbox 
-                  v-model="formData.commonCostDefault"
-                  class="default-checkbox"
-                >
-                  デフォルト値
-                </Checkbox>
-                <div class="input-group">
-                  <Input 
-                    v-model="formData.commonCostDefaultValue" 
-                    type="number"
-                    class="cost-input"
-                  />
-                  <span class="currency-unit">円</span>
-                </div>
-              </div>
+          <div class="form-content cost-row">
+            <div class="cost-input-group">
+              <Input 
+                v-model="formData.commonCost" 
+                type="number"
+                class="cost-input"
+                placeholder="10,000"
+              />
+              <span class="unit">円</span>
             </div>
+            <span class="period-label">有効期間</span>
+            <div class="date-input-group">
+              <Input 
+                v-model="formData.commonCostDate" 
+                type="date"
+                class="date-input"
+              />
+            </div>
+            <Button 
+              variant="primary" 
+              size="small" 
+              class="add-btn"
+              @click="addCommonCost"
+            >
+              追加
+            </Button>
           </div>
         </div>
       </div>
@@ -260,7 +207,7 @@
 <script>
 import Input from '../atoms/Input.vue'
 import Radio from '../atoms/Radio.vue'
-import Checkbox from '../atoms/Checkbox.vue'
+import Select from '../atoms/Select.vue'
 import Button from '../atoms/Button.vue'
 
 export default {
@@ -268,28 +215,31 @@ export default {
   components: {
     Input,
     Radio,
-    Checkbox,
+    Select,
     Button
   },
   data() {
     return {
       formData: {
-        storePlan: 'ganbatte_plan',
-        rsns: 'using',
-        rmsBulkEdit: 'using',
+        fiscalYearStart: '2025年4月',
         laborCost: '10000',
-        laborCostDefault: true,
-        laborCostDefaultValue: '10000',
-        costRate: 'manual_input',
+        laborCostDate: '2025-01-02',
+        costRateType: 'manual',
         costRateValue: '70',
-        costRateDefault: true,
-        costRateDefaultValue: '70',
         shippingCost: '20000',
-        shippingCostDefault: true,
-        shippingCostDefaultValue: '20000',
+        shippingCostDate: '2025-01-02',
         commonCost: '10000',
-        commonCostDefault: true,
-        commonCostDefaultValue: '10000'
+        commonCostDate: '2025-01-02'
+      },
+      fiscalYearOptions: [
+        { value: '2025年4月', label: '2025年4月' },
+        { value: '2024年4月', label: '2024年4月' },
+        { value: '2026年4月', label: '2026年4月' }
+      ],
+      showLaborCostExtraRow: false,
+      laborCostExtra: {
+        amount: '',
+        date: ''
       }
     }
   },
@@ -298,9 +248,20 @@ export default {
       console.log('Saving revenue default settings:', this.formData)
       this.$emit('save', this.formData)
     },
-    handleCsvImport() {
-      // Handle CSV import logic
-      console.log('CSV import clicked')
+    addLaborCost() {
+      // Show extra row
+      this.showLaborCostExtraRow = true
+    },
+    removeLaborCostExtra() {
+      this.showLaborCostExtraRow = false
+      this.laborCostExtra.amount = ''
+      this.laborCostExtra.date = ''
+    },
+    addShippingCost() {
+      console.log('Adding shipping cost:', this.formData.shippingCost, this.formData.shippingCostDate)
+    },
+    addCommonCost() {
+      console.log('Adding common cost:', this.formData.commonCost, this.formData.commonCostDate)
     }
   },
   emits: ['save']
@@ -350,9 +311,17 @@ export default {
   border-bottom: none;
 }
 
+.labor-extra-row {
+  background: #f8fafc;
+}
+
+.cost-rate-row {
+  min-height: 120px;
+}
+
 .form-label {
-  width: 200px;
-  min-width: 200px;
+  width: 250px;
+  min-width: 250px;
   padding: 16px 24px;
   background: #f8f9fa;
   border-right: 1px solid #e0e0e0;
@@ -366,8 +335,16 @@ export default {
   padding: 16px 24px;
   background: white;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+}
+
+.cost-row {
+  gap: 24px;
+}
+
+.cost-rate-content {
+  align-items: flex-start;
+  padding-top: 20px;
 }
 
 .label-text {
@@ -376,20 +353,21 @@ export default {
   font-size: 0.9rem;
 }
 
-.radio-group {
-  display: flex;
-  gap: 90px;
-  align-items: center;
-  flex-wrap: wrap;
+.required-badge {
+  background: #dc3545;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-.input-with-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 60px;
+.fiscal-year-select {
+  width: 200px;
 }
 
-.input-group {
+.cost-input-group {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -400,55 +378,30 @@ export default {
   text-align: right;
 }
 
-.currency-unit {
+.unit {
   font-size: 0.9rem;
   color: #666;
   font-weight: 500;
 }
 
-.percent-unit {
+.period-label {
   font-size: 0.9rem;
   color: #666;
   font-weight: 500;
 }
 
-.checkbox-group {
+.date-input-group {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  position: relative;
 }
 
-.default-checkbox {
-  white-space: nowrap;
+.date-input {
+  width: 150px;
 }
 
-.cost-rate-group {
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
-}
-
-.radio-group-vertical {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.radio-with-button {
-  display: flex;
-  align-items: center;
-  gap: 45px;
-}
-
-.radio-with-input {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.csv-import-btn {
+.add-btn {
   background: #1e3a8a;
   color: white;
   border: none;
@@ -457,10 +410,52 @@ export default {
   font-size: 0.875rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  white-space: nowrap;
 }
 
-.csv-import-btn:hover {
+.add-btn:disabled {
+  background: #bfc6d1;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.add-btn:hover:enabled {
   background: #1e40af;
+}
+
+.delete-btn {
+  background: #fff;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.delete-btn:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+.cost-rate-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.radio-with-input-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
 }
 
 /* Responsive */
@@ -493,36 +488,21 @@ export default {
     padding: 12px 20px;
   }
   
-  .radio-group {
+  .cost-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
   
-  .input-with-checkbox {
-    flex-direction: column;
+  .cost-rate-content {
     align-items: flex-start;
-    gap: 12px;
+    padding-top: 12px;
   }
   
-  .cost-rate-group {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  
-  .radio-with-button {
+  .radio-with-input-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
-  }
-  
-  .radio-with-input {
-    width: 100%;
-  }
-  
-  .checkbox-group {
-    flex-wrap: wrap;
   }
 }
 </style> 

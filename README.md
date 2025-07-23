@@ -2,18 +2,6 @@
 
 Giao diện đăng nhập theo thiết kế Smartweb với ngôn ngữ tiếng Nhật, sử dụng Vue 3, Vue Router và cấu trúc Atomic Design.
 
-## ✨ Tính năng
-
-- 🎨 Giao diện theo thiết kế Smartweb chính thức
-- 🇯🇵 Ngôn ngữ tiếng Nhật (Japanese)
-- 🔐 Form đăng nhập với validation
-- 📱 Responsive design cho mobile
-- 🎭 Hiệu ứng animation tiền tệ bay lượn
-- 💎 Glass morphism effect
-- 🏠 Trang home sau khi đăng nhập thành công
-- 🔧 Cấu trúc Atomic Design
-- 🛣️ Vue Router cho navigation
-
 ## 🚀 Cài đặt và Chạy
 
 ### Bước 1: Cài đặt dependencies
@@ -101,18 +89,6 @@ shueki_ui/
 - **LoginPage**: Trang đăng nhập
 - **HomePage**: Trang chính sau khi login
 
-## 🎨 Tùy chỉnh
-
-### Thay đổi ảnh nền
-Thay thế file `data/background.jpg` bằng ảnh mới (khuyến nghị 1920x1080px)
-
-### Thay đổi logo
-Thay thế file `data/logo.png` bằng logo mới (khuyến nghị 200x200px)
-
-### Tùy chỉnh màu sắc
-- Atoms: Chỉnh sửa styles trong từng atom component
-- Theme: Tùy chỉnh CSS variables trong `src/style.css`
-
 ## 🔧 Công nghệ sử dụng
 
 - **Vue 3** - Framework JavaScript
@@ -129,36 +105,9 @@ Giao diện được thiết kế responsive và hoạt động tốt trên:
 - 📱 Tablet (768px - 1199px)
 - 📱 Mobile (< 768px)
 
-## 🎯 Demo
-
-### Màn hình đăng nhập:
-- Header trắng với logo Smartweb
-- Form đăng nhập với email/password (tiếng Nhật)
-- Checkbox "ログイン状態を保持する" (Keep login state)
-- Nút "ログイン" (Login)
-- Hiệu ứng loading khi submit
-- Ký hiệu tiền tệ bay lượn trên ảnh nền
-
-### Màn hình home (sau khi đăng nhập):
-- Header với logo và thông tin user
-- Dashboard cards với các chức năng
-- Nút logout để quay lại màn hình đăng nhập
-
-## 🛣️ Routing
-
-- `/` - Trang đăng nhập
-- `/home` - Trang chính (yêu cầu đăng nhập)
 
 ## 🔐 Authentication
 
 - Local Storage để lưu trạng thái đăng nhập
 - Navigation guard để protect routes
 - Auto redirect khi đã đăng nhập
-
-## 🤝 Đóng góp
-
-Mọi đóng góp đều được chào đón! Hãy tạo issue hoặc pull request.
-
-## 📄 License
-
-MIT License 
