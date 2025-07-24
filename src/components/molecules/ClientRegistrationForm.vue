@@ -422,8 +422,16 @@ import NotificationPopup from './NotificationPopup.vue'
 import { validateEmail } from '../../data/userData.js'
 import { addNewClient } from '../../data/clientData.js'
 
-// Lazy load the heavy rich text editor component
-const RichTextEditor = () => import('../atoms/RichTextEditor.vue')
+// Lazy load the heavy rich text editor component with error handling
+const RichTextEditor = () => import('../atoms/RichTextEditor.vue').catch(err => {
+  console.error('Failed to load RichTextEditor:', err)
+  // Return a simple fallback component
+  return {
+    template: '<textarea v-model="modelValue" :placeholder="placeholder" @input="$emit(\'update:modelValue\', $event.target.value)"></textarea>',
+    props: ['modelValue', 'placeholder'],
+    emits: ['update:modelValue']
+  }
+})
 
 export default {
   name: 'ClientRegistrationForm',

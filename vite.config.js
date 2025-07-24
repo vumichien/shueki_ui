@@ -3,16 +3,17 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
-  base: '/', // Use absolute path for SPA routing
+  base: '/',
   build: {
     assetsDir: 'assets',
-    assetsInlineLimit: 0, // Force all assets to be separate files
-    // Set chunk size warning limit to 500kb
+    assetsInlineLimit: 4096, // Inline small assets, separate large ones
     chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
         assetFileNames: 'assets/[name]-[hash][extname]',
-        // Manual chunking for better code splitting
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        // Simplified chunking strategy for better Vercel compatibility
         manualChunks(id) {
           // Vendor libraries
           if (id.includes('node_modules')) {
@@ -25,22 +26,27 @@ export default defineConfig({
               return 'editor'
             }
             // Vue and router in vendor chunk
-            if (id.includes('vue') || id.includes('vue-router')) {
+            if (id.includes('vue')) {
               return 'vue-vendor'
             }
             // Other node_modules in vendor chunk
             return 'vendor'
           }
-          
-          // Admin pages chunk
-          if (id.includes('/pages/Admin') || id.includes('/pages/System')) {
-            return 'admin'
-          }
         }
       }
-    }
+    },
+    // Ensure proper module format for Vercel
+    target: 'es2018',
+    minify: 'esbuild',
+    sourcemap: false
   },
   server: {
     port: 3000
+  },
+  // Ensure proper resolution for Vercel
+  resolve: {
+    alias: {
+      '@': '/src'
+    }
   }
 }) 
