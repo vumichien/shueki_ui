@@ -11,8 +11,9 @@
     ></textarea>
     
     <!-- QuillEditor component -->
-    <QuillEditor
-      v-else-if="quillLoaded"
+    <component
+      v-else-if="quillLoaded && QuillEditorComponent"
+      :is="QuillEditorComponent"
       v-model:content="content"
       :options="editorOptions"
       contentType="html"
@@ -32,14 +33,8 @@
 </template>
 
 <script>
-let QuillEditor = null
-let quillCssLoaded = false
-
 export default {
   name: 'RichTextEditor',
-  components: {
-    QuillEditor: () => QuillEditor
-  },
   props: {
     modelValue: {
       type: String,
@@ -65,6 +60,7 @@ export default {
       quillLoaded: false,
       showFallback: false,
       loadingTimeout: null,
+      QuillEditorComponent: null,
       editorOptions: {
         placeholder: this.placeholder,
         readOnly: this.disabled,
@@ -112,16 +108,17 @@ export default {
         }, 5000)
 
         // Load CSS first
-        if (!quillCssLoaded) {
+        try {
           await import('@vueup/vue-quill/dist/vue-quill.snow.css')
-          quillCssLoaded = true
+        } catch (cssError) {
+          console.warn('Failed to load Quill CSS:', cssError)
         }
 
         // Load QuillEditor component
         const quillModule = await import('@vueup/vue-quill')
-        QuillEditor = quillModule.QuillEditor
         
-        if (QuillEditor) {
+        if (quillModule && quillModule.QuillEditor) {
+          this.QuillEditorComponent = quillModule.QuillEditor
           this.quillLoaded = true
           console.log('QuillEditor loaded successfully')
         } else {

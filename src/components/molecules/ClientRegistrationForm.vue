@@ -422,40 +422,8 @@ import NotificationPopup from './NotificationPopup.vue'
 import { validateEmail } from '../../data/userData.js'
 import { addNewClient } from '../../data/clientData.js'
 
-// Lazy load the heavy rich text editor component with error handling
-const RichTextEditor = () => import('../atoms/RichTextEditor.vue').catch(err => {
-  console.error('Failed to load RichTextEditor:', err)
-  // Return a simple fallback component that matches the interface
-  return {
-    template: `
-      <div class="fallback-rich-editor">
-        <textarea 
-          :value="modelValue" 
-          :placeholder="placeholder" 
-          :disabled="disabled"
-          @input="$emit('update:modelValue', $event.target.value)"
-          @change="$emit('change', $event.target.value)"
-          class="fallback-textarea"
-        ></textarea>
-      </div>
-    `,
-    props: ['modelValue', 'placeholder', 'disabled', 'error'],
-    emits: ['update:modelValue', 'change'],
-    style: `
-      .fallback-rich-editor .fallback-textarea {
-        width: 100%;
-        min-height: 120px;
-        padding: 12px 16px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-family: inherit;
-        font-size: 1rem;
-        line-height: 1.5;
-        resize: vertical;
-      }
-    `
-  }
-})
+// Lazy load the heavy rich text editor component
+const RichTextEditor = () => import('../atoms/RichTextEditor.vue')
 
 export default {
   name: 'ClientRegistrationForm',

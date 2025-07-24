@@ -19,10 +19,7 @@ import MetricsCards from '../components/molecules/MetricsCards.vue'
 import DataTable from '../components/organisms/DataTable.vue'
 
 // Lazy load the heavy chart component
-const RevenueChart = () => import('../components/organisms/RevenueChart.vue').catch(err => {
-  console.error('Failed to load RevenueChart:', err)
-  return import('../components/organisms/RevenueChart.vue')
-})
+const RevenueChart = () => import('../components/organisms/RevenueChart.vue')
 
 export default {
   name: 'HomePage',
