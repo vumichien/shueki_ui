@@ -1,18 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginPage from '../pages/LoginPage.vue'
-import AdminLoginPage from '../pages/AdminLoginPage.vue'
-import HomePage from '../pages/HomePage.vue'
-import RevenueReportPage from '../pages/RevenueReportPage.vue'
-import SystemPage from '../pages/SystemPage.vue'
-import SystemOverviewPage from '../pages/SystemOverviewPage.vue'
-import SystemRmsPage from '../pages/SystemRmsPage.vue'
-import SystemRevenueDefaultPage from '../pages/SystemRevenueDefaultPage.vue'
-import AccountPage from '../pages/AccountPage.vue'
-import AccountPasswordPage from '../pages/AccountPasswordPage.vue'
-import AdminAccountPasswordPage from '../pages/AdminAccountPasswordPage.vue'
-import AdminAccountCreatePage from '../pages/AdminAccountCreatePage.vue'
-import ClientListPage from '../pages/ClientListPage.vue'
-import ClientNewPage from '../pages/ClientNewPage.vue'
+
+// Lazy load all page components for better code splitting
+const LoginPage = () => import('../pages/LoginPage.vue')
+const AdminLoginPage = () => import('../pages/AdminLoginPage.vue')
+const HomePage = () => import('../pages/HomePage.vue')
+const RevenueReportPage = () => import('../pages/RevenueReportPage.vue')
+const SystemPage = () => import('../pages/SystemPage.vue')
+const SystemOverviewPage = () => import('../pages/SystemOverviewPage.vue')
+const SystemRmsPage = () => import('../pages/SystemRmsPage.vue')
+const SystemRevenueDefaultPage = () => import('../pages/SystemRevenueDefaultPage.vue')
+const AccountPage = () => import('../pages/AccountPage.vue')
+const AccountPasswordPage = () => import('../pages/AccountPasswordPage.vue')
+const AdminAccountPasswordPage = () => import('../pages/AdminAccountPasswordPage.vue')
+const AdminAccountCreatePage = () => import('../pages/AdminAccountCreatePage.vue')
+const ClientListPage = () => import('../pages/ClientListPage.vue')
+const ClientNewPage = () => import('../pages/ClientNewPage.vue')
 
 const routes = [
   {
