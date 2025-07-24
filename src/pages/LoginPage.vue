@@ -2,7 +2,7 @@
   <LoginTemplate>
     <LoginForm @login-success="handleLoginSuccess" />
     <div class="admin-login-link">
-      <router-link to="/admin/login" class="admin-link">
+      <router-link to="/mgmt-portal-auth" class="admin-link">
         管理者ログイン
       </router-link>
     </div>

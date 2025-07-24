@@ -50,11 +50,11 @@ export default {
     },
     handleNewClient() {
       // Navigate to new client registration page
-      this.$router.push('/admin/clients/new')
+      this.$router.push('/mgmt-portal/client-registry/create')
     },
     handleViewDetails(client) {
       // Navigate to client details page
-      this.$router.push(`/admin/clients/${client.id}`)
+      this.$router.push(`/mgmt-portal/client-registry/${client.id}`)
     },
     handleToggleStatus(client) {
       // Toggle client status

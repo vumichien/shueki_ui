@@ -66,12 +66,12 @@ const routes = [
     component: LoginPage
   },
   {
-    path: '/admin/login',
+    path: '/mgmt-portal-auth',
     name: 'AdminLogin',
     component: AdminLoginPage
   },
   {
-    path: '/admin/system-overview',
+    path: '/control-panel/dashboard',
     name: 'AdminSystemOverview',
     component: SystemOverviewPage,
     meta: { requiresAdminAuth: true }
@@ -125,25 +125,25 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/admin/clients',
+    path: '/mgmt-portal/client-registry',
     name: 'AdminClients',
     component: ClientListPage,
     meta: { requiresAdminAuth: true }
   },
   {
-    path: '/admin/clients/new',
+    path: '/mgmt-portal/client-registry/create',
     name: 'AdminClientNew',
     component: ClientNewPage,
     meta: { requiresAdminAuth: true }
   },
   {
-    path: '/admin/account/password',
+    path: '/control-panel/security/password',
     name: 'AdminAccountPassword',
     component: AdminAccountPasswordPage,
     meta: { requiresAdminAuth: true }
   },
   {
-    path: '/admin/account/new',
+    path: '/control-panel/security/create-account',
     name: 'AdminAccountCreate',
     component: AdminAccountCreatePage,
     meta: { requiresAdminAuth: true }

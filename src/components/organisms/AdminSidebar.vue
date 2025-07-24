@@ -10,7 +10,7 @@
     <nav class="sidebar-nav">
       <ul class="nav-list">
         <li class="nav-item">
-          <router-link to="/admin/system-overview" class="nav-link" active-class="active">
+          <router-link to="/control-panel/dashboard" class="nav-link" active-class="active">
             <i class="fas fa-chart-bar icon"></i>
             <span>システム全体の状態</span>
           </router-link>
@@ -23,12 +23,12 @@
           </div>
           <ul class="sub-nav-list" :class="{ 'open': openSubmenus.client }">
             <li class="sub-nav-item">
-              <router-link to="/admin/clients" class="sub-nav-link">
+              <router-link to="/mgmt-portal/client-registry" class="sub-nav-link">
                 クライアント一覧
               </router-link>
             </li>
             <li class="sub-nav-item">
-              <router-link to="/admin/clients/new" class="sub-nav-link">
+              <router-link to="/mgmt-portal/client-registry/create" class="sub-nav-link">
                 クライアント新規登録
               </router-link>
             </li>
@@ -42,12 +42,12 @@
           </div>
           <ul class="sub-nav-list" :class="{ 'open': openSubmenus.account }">
             <li class="sub-nav-item">
-              <router-link to="/admin/account/password" class="sub-nav-link">
+              <router-link to="/control-panel/security/password" class="sub-nav-link">
                 パスワード変更
               </router-link>
             </li>
             <li class="sub-nav-item">
-              <router-link to="/admin/account/new" class="sub-nav-link">
+              <router-link to="/control-panel/security/create-account" class="sub-nav-link">
                 新規アカウント発行
               </router-link>
             </li>
@@ -104,10 +104,10 @@ export default {
   mounted() {
     // Check current route and open appropriate submenu on initial load
     const currentPath = this.$route.path
-    if (currentPath.startsWith('/admin/clients') && !this.openSubmenus.client) {
+    if (currentPath.startsWith('/mgmt-portal/client-registry') && !this.openSubmenus.client) {
       this.openSubmenus.client = true
       localStorage.setItem('admin_sidebar_submenu_client', 'true')
-    } else if (currentPath.startsWith('/admin/account/') && !this.openSubmenus.account) {
+    } else if (currentPath.startsWith('/control-panel/security/') && !this.openSubmenus.account) {
       this.openSubmenus.account = true
       localStorage.setItem('admin_sidebar_submenu_account', 'true')
     }
