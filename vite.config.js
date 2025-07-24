@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
-  base: './', // Use relative base path for better compatibility
+  base: '/', // Use absolute base path for SPA routing
   build: {
     assetsDir: 'assets',
     assetsInlineLimit: 0, // Force all assets to be separate files
