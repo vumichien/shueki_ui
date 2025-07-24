@@ -2,7 +2,7 @@
   <div class="date-picker">
     <div class="date-picker-trigger" @click="toggleCalendar">
       <div class="date-display">
-        <span class="date-label">{{ label }}</span>
+        <span v-if="showLabel" class="date-label">{{ label }}</span>
         <span class="selected-date">
           {{ formatDate(displayDate) }}
         </span>
@@ -71,6 +71,10 @@ export default {
     label: {
       type: String,
       default: '実施日'
+    },
+    showLabel: {
+      type: Boolean,
+      default: true
     },
     minDate: {
       type: Date,
@@ -332,6 +336,10 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.date-display:has(.selected-date:only-child) {
+  gap: 0;
 }
 
 .date-label {

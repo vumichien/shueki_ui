@@ -12,6 +12,7 @@ import AccountPasswordPage from '../pages/AccountPasswordPage.vue'
 import AdminAccountPasswordPage from '../pages/AdminAccountPasswordPage.vue'
 import AdminAccountCreatePage from '../pages/AdminAccountCreatePage.vue'
 import ClientListPage from '../pages/ClientListPage.vue'
+import ClientNewPage from '../pages/ClientNewPage.vue'
 
 const routes = [
   {
@@ -82,6 +83,12 @@ const routes = [
     path: '/admin/clients',
     name: 'AdminClients',
     component: ClientListPage,
+    meta: { requiresAdminAuth: true }
+  },
+  {
+    path: '/admin/clients/new',
+    name: 'AdminClientNew',
+    component: ClientNewPage,
     meta: { requiresAdminAuth: true }
   },
   {

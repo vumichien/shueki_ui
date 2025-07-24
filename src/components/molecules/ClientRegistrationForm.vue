@@ -100,12 +100,14 @@
             <span class="required-badge">必須</span>
           </div>
           <div class="form-content">
-            <Input 
-              v-model="formData.loginId"
-              placeholder="email@detomo.co.jp"
-              :error="errors.loginId"
-              class="form-input"
-            />
+            <div class="input-with-suffix">
+              <Input 
+                v-model="formData.loginId"
+                placeholder="email@detomo.co.jp"
+                :error="errors.loginId"
+                class="form-input"
+              />
+            </div>
           </div>
         </div>
         
@@ -146,12 +148,14 @@
             <span class="required-badge">必須</span>
           </div>
           <div class="form-content">
-            <Input 
-              v-model="formData.rakutenLoginStage1"
-              placeholder="example@detomo.co.jp"
-              :error="errors.rakutenLoginStage1"
-              class="form-input"
-            />
+            <div class="input-with-suffix">
+              <Input 
+                v-model="formData.rakutenLoginStage1"
+                placeholder="example@detomo.co.jp"
+                :error="errors.rakutenLoginStage1"
+                class="form-input"
+              />
+            </div>
           </div>
         </div>
         
@@ -186,12 +190,14 @@
             <span class="required-badge">必須</span>
           </div>
           <div class="form-content">
-            <Input 
-              v-model="formData.rakutenLoginStage2"
-              placeholder="example.co.jp"
-              :error="errors.rakutenLoginStage2"
-              class="form-input"
-            />
+            <div class="input-with-suffix">
+              <Input 
+                v-model="formData.rakutenLoginStage2"
+                placeholder="example.co.jp"
+                :error="errors.rakutenLoginStage2"
+                class="form-input"
+              />
+            </div>
           </div>
         </div>
         
@@ -225,10 +231,10 @@
             <span class="label-text">アカウント有効/無効</span>
           </div>
           <div class="form-content radio-content">
-            <Radio v-model="formData.accountStatus" value="active" name="accountStatus">
+            <Radio v-model="formData.rakutenAccountStatus" value="active" name="rakutenAccountStatus">
               有効
             </Radio>
-            <Radio v-model="formData.accountStatus" value="inactive" name="accountStatus">
+            <Radio v-model="formData.rakutenAccountStatus" value="inactive" name="rakutenAccountStatus">
               無効
             </Radio>
           </div>
@@ -239,11 +245,11 @@
             <span class="label-text">利用開始日</span>
           </div>
           <div class="form-content">
-            <Select 
-              v-model="formData.startDate"
-              :options="startDateOptions"
+            <DatePicker 
+              v-model="formData.rakutenStartDate"
               placeholder="2025年06月01日"
-              class="form-select start-date-select"
+              :showLabel="false"
+              class="form-datepicker"
             />
           </div>
         </div>
@@ -254,7 +260,7 @@
           </div>
           <div class="form-content">
             <Select 
-              v-model="formData.contractStatus"
+              v-model="formData.rakutenContractStatus"
               :options="contractStatusOptions"
               placeholder="本契約"
               class="form-select contract-select"
@@ -266,13 +272,115 @@
           <div class="form-label">
             <span class="label-text">備考</span>
           </div>
-          <div class="form-content">
-            <textarea 
-              v-model="formData.notes"
+          <div class="form-content form-content-notes">
+            <RichTextEditor 
+              v-model="formData.rakutenNotes"
               placeholder="入力してください"
-              class="form-textarea"
-              rows="4"
-            ></textarea>
+              class="form-richtext"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3 class="section-title">Amazon店舗</h3>
+      
+      <div class="form-table">
+        <div class="form-row">
+          <div class="form-label">
+            <span class="label-text">ログイン</span>
+            <span class="required-badge">必須</span>
+          </div>
+          <div class="form-content">
+            <div class="input-with-suffix">
+              <Input 
+                v-model="formData.amazonLogin"
+                placeholder="example@detomo.co.jp"
+                :error="errors.amazonLogin"
+                class="form-input"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-label">
+            <span class="label-text">パスワード</span>
+            <span class="required-badge">必須</span>
+          </div>
+          <div class="form-content password-content">
+            <div class="password-input-wrapper">
+              <Input 
+                v-model="formData.amazonPassword"
+                :type="showAmazonPassword ? 'text' : 'password'"
+                placeholder="XXXXXXXXXXX"
+                :error="errors.amazonPassword"
+                class="form-input password-input"
+              />
+              <button 
+                type="button" 
+                class="password-toggle"
+                @click="showAmazonPassword = !showAmazonPassword"
+              >
+                <Icon :name="showAmazonPassword ? 'eye-slash' : 'eye'" />
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-label">
+            <span class="label-text">アカウント有効/無効</span>
+          </div>
+          <div class="form-content radio-content">
+            <Radio v-model="formData.amazonAccountStatus" value="active" name="amazonAccountStatus">
+              有効
+            </Radio>
+            <Radio v-model="formData.amazonAccountStatus" value="inactive" name="amazonAccountStatus">
+              無効
+            </Radio>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-label">
+            <span class="label-text">利用開始日</span>
+          </div>
+          <div class="form-content">
+            <DatePicker 
+              v-model="formData.amazonStartDate"
+              placeholder="2025年06月01日"
+              :showLabel="false"
+              class="form-datepicker"
+            />
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-label">
+            <span class="label-text">契約状態</span>
+          </div>
+          <div class="form-content">
+            <Select 
+              v-model="formData.amazonContractStatus"
+              :options="contractStatusOptions"
+              placeholder="本契約"
+              class="form-select contract-select"
+            />
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-label">
+            <span class="label-text">備考</span>
+          </div>
+          <div class="form-content form-content-notes">
+            <RichTextEditor 
+              v-model="formData.amazonNotes"
+              placeholder="入力してください"
+              class="form-richtext"
+            />
           </div>
         </div>
       </div>
@@ -309,6 +417,8 @@ import Select from '../atoms/Select.vue'
 import Radio from '../atoms/Radio.vue'
 import Button from '../atoms/Button.vue'
 import Icon from '../atoms/Icon.vue'
+import DatePicker from '../atoms/DatePicker.vue'
+import RichTextEditor from '../atoms/RichTextEditor.vue'
 import NotificationPopup from './NotificationPopup.vue'
 import { validateEmail } from '../../data/userData.js'
 import { addNewClient } from '../../data/clientData.js'
@@ -321,6 +431,8 @@ export default {
     Radio,
     Button,
     Icon,
+    DatePicker,
+    RichTextEditor,
     NotificationPopup
   },
   data() {
@@ -328,6 +440,7 @@ export default {
       showPassword: false,
       showRakutenPassword1: false,
       showRakutenPassword2: false,
+      showAmazonPassword: false,
       isSubmitting: false,
       showSuccessPopup: false,
       successMessage: '',
@@ -358,15 +471,7 @@ export default {
         rakutenLoginStage2: '',
         rakutenPasswordStage2: ''
       },
-      startDateOptions: [
-        { value: '2025年06月01日', label: '2025年06月01日' },
-        { value: '2025年07月01日', label: '2025年07月01日' },
-        { value: '2025年08月01日', label: '2025年08月01日' },
-        { value: '2025年09月01日', label: '2025年09月01日' },
-        { value: '2025年10月01日', label: '2025年10月01日' },
-        { value: '2025年11月01日', label: '2025年11月01日' },
-        { value: '2025年12月01日', label: '2025年12月01日' }
-      ],
+
       contractStatusOptions: [
         { value: '本契約', label: '本契約' },
         { value: '試用期間', label: '試用期間' },
@@ -383,13 +488,17 @@ export default {
              this.formData.rakutenPasswordStage1 && 
              this.formData.rakutenLoginStage2 && 
              this.formData.rakutenPasswordStage2 &&
+             this.formData.amazonLogin &&
+             this.formData.amazonPassword &&
              !this.errors.clientName &&
              !this.errors.loginId &&
              !this.errors.password &&
              !this.errors.rakutenLoginStage1 &&
              !this.errors.rakutenPasswordStage1 &&
              !this.errors.rakutenLoginStage2 &&
-             !this.errors.rakutenPasswordStage2
+             !this.errors.rakutenPasswordStage2 &&
+             !this.errors.amazonLogin &&
+             !this.errors.amazonPassword
     }
   },
   watch: {
@@ -427,6 +536,16 @@ export default {
       if (this.errors.rakutenPasswordStage2) {
         this.errors.rakutenPasswordStage2 = ''
       }
+    },
+    'formData.amazonLogin'() {
+      if (this.errors.amazonLogin) {
+        this.errors.amazonLogin = ''
+      }
+    },
+    'formData.amazonPassword'() {
+      if (this.errors.amazonPassword) {
+        this.errors.amazonPassword = ''
+      }
     }
   },
   methods: {
@@ -438,7 +557,9 @@ export default {
         rakutenLoginStage1: '', 
         rakutenPasswordStage1: '', 
         rakutenLoginStage2: '', 
-        rakutenPasswordStage2: '' 
+        rakutenPasswordStage2: '',
+        amazonLogin: '',
+        amazonPassword: ''
       }
       let isValid = true
       
@@ -483,6 +604,19 @@ export default {
       
       if (!this.formData.rakutenPasswordStage2.trim()) {
         this.errors.rakutenPasswordStage2 = 'パスワード（2段階目）を入力してください'
+        isValid = false
+      }
+      
+      if (!this.formData.amazonLogin.trim()) {
+        this.errors.amazonLogin = 'Amazonログインを入力してください'
+        isValid = false
+      } else if (!validateEmail(this.formData.amazonLogin)) {
+        this.errors.amazonLogin = '有効なログインIDを入力してください'
+        isValid = false
+      }
+      
+      if (!this.formData.amazonPassword.trim()) {
+        this.errors.amazonPassword = 'Amazonパスワードを入力してください'
         isValid = false
       }
       
@@ -535,10 +669,16 @@ export default {
         rakutenPasswordStage1: '',
         rakutenLoginStage2: '',
         rakutenPasswordStage2: '',
-        accountStatus: 'active',
-        startDate: '2025年06月01日',
-        contractStatus: '本契約',
-        notes: ''
+        rakutenAccountStatus: 'active',
+        rakutenStartDate: null,
+        rakutenContractStatus: '本契約',
+        rakutenNotes: '',
+        amazonLogin: '',
+        amazonPassword: '',
+        amazonAccountStatus: 'active',
+        amazonStartDate: null,
+        amazonContractStatus: '本契約',
+        amazonNotes: ''
       }
       this.errors = {
         clientName: '',
@@ -547,7 +687,9 @@ export default {
         rakutenLoginStage1: '',
         rakutenPasswordStage1: '',
         rakutenLoginStage2: '',
-        rakutenPasswordStage2: ''
+        rakutenPasswordStage2: '',
+        amazonLogin: '',
+        amazonPassword: ''
       }
     }
   },
@@ -615,7 +757,8 @@ export default {
   background: white;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .label-text {
@@ -639,7 +782,13 @@ export default {
   width: 100%;
 }
 
-
+.input-with-suffix {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 500px;
+  width: 100%;
+}
 
 .password-content {
   position: relative;
@@ -681,6 +830,10 @@ export default {
   max-width: 200px;
 }
 
+.form-datepicker {
+  max-width: 200px;
+}
+
 .radio-content {
   gap: 30px;
   flex-direction: row;
@@ -709,31 +862,56 @@ export default {
   color: #999;
 }
 
+.form-richtext {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-content-notes {
+  height: 250px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
 .form-actions {
-  padding: 30px;
-  background: white;
+  /* padding: 30px; */
+  /* background: white; */
   display: flex;
   justify-content: center;
 }
 
 .save-button {
-  background: #3b4a6b !important;
-  border-color: #3b4a6b !important;
-  padding: 12px 40px;
-  font-size: 1rem;
-  border-radius: 6px;
-  min-width: 120px;
+  background: #2d3748 !important;
+  border: 1px solid #2d3748 !important;
+  color: white !important;
+  padding: 14px 30px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 4px;
+  min-width: 100px;
+  transition: all 0.2s ease;
 }
 
 .save-button:hover:not(:disabled) {
-  background: #2c3a54 !important;
-  border-color: #2c3a54 !important;
+  background: #1a202c !important;
+  border-color: #1a202c !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .save-button:disabled {
-  background: #bfc6d1 !important;
-  border-color: #bfc6d1 !important;
+  background: #e2e8f0 !important;
+  border-color: #e2e8f0 !important;
+  color: #a0aec0 !important;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Responsive */
@@ -762,8 +940,18 @@ export default {
   
   .form-input,
   .password-input-wrapper,
-  .form-textarea {
+  .form-textarea,
+  .form-richtext {
     max-width: 100%;
+  }
+  
+  .form-richtext {
+    max-width: 100%;
+  }
+  
+  .form-content-notes {
+    height: 200px;
+    padding: 16px 16px;
   }
   
   .radio-content {
