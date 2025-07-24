@@ -14,7 +14,7 @@
   ],
   "headers": [
     {
-      "source": "/assets/(.*\\.js)",
+      "source": "/assets/(.*).js",
       "headers": [
         {
           "key": "Content-Type",
@@ -27,7 +27,7 @@
       ]
     },
     {
-      "source": "/assets/(.*\\.css)",
+      "source": "/assets/(.*).css",
       "headers": [
         {
           "key": "Content-Type",
@@ -40,7 +40,7 @@
       ]
     },
     {
-      "source": "/assets/(.*\\.(png|jpg|jpeg|gif|svg|ico))",
+      "source": "/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
