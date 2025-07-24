@@ -6,14 +6,13 @@
       </div>
       <div class="table-actions">
         <div class="date-filter">
-          <label>実施日</label>
-          <select v-model="selectedDate" class="date-select">
-            <option value="2025年6月1日">2025年6月1日</option>
-            <option value="2025年5月1日">2025年5月1日</option>
-            <option value="2025年4月1日">2025年4月1日</option>
-          </select>
+          <DatePicker 
+            v-model="selectedDate"
+            label="実施日"
+            :availableDates="availableDates"
+            @change="handleDateChange"
+          />
         </div>
-        <Button variant="primary" class="settings-btn">設定</Button>
       </div>
     </div>
     
@@ -57,95 +56,23 @@
 </template>
 
 <script>
-import Button from '../atoms/Button.vue'
+import DatePicker from '../atoms/DatePicker.vue'
+import { getSystemStatusDataByDate, getDefaultDate, getAvailableDates } from '../../data/systemStatusData.js'
 
 export default {
   name: 'SystemStatusTable',
   components: {
-    Button
+    DatePicker
   },
   data() {
     return {
-      selectedDate: '2025年6月1日',
-      tableData: [
-        {
-          id: 1,
-          clientId: 'CL001',
-          clientName: '株式会社A',
-          executionDate: '2024/01/15',
-          status: '成功'
-        },
-        {
-          id: 2,
-          clientId: 'CL002',
-          clientName: '株式会社B',
-          executionDate: '2024/02/15',
-          status: '成功'
-        },
-        {
-          id: 3,
-          clientId: 'CL003',
-          clientName: '株式会社C',
-          executionDate: '2024/03/15',
-          status: '成功'
-        },
-        {
-          id: 4,
-          clientId: 'CL004',
-          clientName: '株式会社D',
-          executionDate: '2024/04/15',
-          status: 'エラー'
-        },
-        {
-          id: 5,
-          clientId: 'CL005',
-          clientName: '株式会社D',
-          executionDate: '2024/05/15',
-          status: 'エラー'
-        },
-        {
-          id: 6,
-          clientId: 'CL006',
-          clientName: '株式会社E',
-          executionDate: '2024/06/15',
-          status: '成功'
-        },
-        {
-          id: 7,
-          clientId: 'CL007',
-          clientName: '株式会社F',
-          executionDate: '2024/07/15',
-          status: 'エラー'
-        },
-        {
-          id: 8,
-          clientId: 'CL008',
-          clientName: '株式会社G',
-          executionDate: '2024/08/15',
-          status: '成功'
-        },
-        {
-          id: 9,
-          clientId: 'CL009',
-          clientName: '株式会社H',
-          executionDate: '2024/09/15',
-          status: '成功'
-        },
-        {
-          id: 10,
-          clientId: 'CL010',
-          clientName: '株式会社I',
-          executionDate: '2024/10/15',
-          status: '成功'
-        },
-        {
-          id: 11,
-          clientId: 'CL011',
-          clientName: '株式会社J',
-          executionDate: '2024/11/15',
-          status: '成功'
-        }
-      ]
+      selectedDate: getDefaultDate(),
+      tableData: []
+    }
+  },
+  computed: {
+    availableDates() {
+      return getAvailableDates()
     }
   },
   methods: {
@@ -153,9 +80,33 @@ export default {
       // Handle view details action
       console.log('View details for:', item)
       this.$emit('view-details', item)
+    },
+    
+    handleDateChange(date) {
+      console.log('Date changed to:', date)
+      this.selectedDate = date
+      this.loadTableDataForDate(date)
+      this.$emit('date-changed', date)
+    },
+    
+    loadTableDataForDate(date) {
+      // Load table data for the selected date
+      const executions = getSystemStatusDataByDate(date)
+      this.tableData = executions
+      console.log(`Loaded ${executions.length} executions for date:`, date)
+    },
+    
+    filterTableDataByDate(date) {
+      // Filter table data based on selected date
+      this.loadTableDataForDate(date)
+      this.$emit('date-changed', date)
     }
   },
-  emits: ['view-details']
+  mounted() {
+    // Load initial data for the selected date
+    this.loadTableDataForDate(this.selectedDate)
+  },
+  emits: ['view-details', 'date-changed']
 }
 </script>
 
@@ -197,27 +148,9 @@ export default {
   gap: 8px;
 }
 
-.date-filter label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-}
 
-.date-select {
-  padding: 6px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  background: white;
-  color: #374151;
-}
 
-.settings-btn {
-  background: #1e3a8a;
-  color: white;
-  padding: 8px 16px;
-  font-size: 0.875rem;
-}
+
 
 .table-container {
   overflow-x: auto;

@@ -69,6 +69,7 @@ export default {
 <style scoped>
 .select-wrapper {
   width: 100%;
+  position: relative;
 }
 
 .select {
@@ -81,27 +82,42 @@ export default {
   box-sizing: border-box;
   font-family: inherit;
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
 }
 
 .select:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
 }
 
 .select--small {
-  padding: 8px 12px;
+  padding: 8px 32px 8px 12px;
   font-size: 0.875rem;
+  background-position: right 8px center;
+  background-size: 14px;
 }
 
 .select--medium {
-  padding: 12px 16px;
+  padding: 12px 40px 12px 16px;
   font-size: 1rem;
+  background-position: right 12px center;
+  background-size: 16px;
 }
 
 .select--large {
-  padding: 16px 20px;
+  padding: 16px 48px 16px 20px;
   font-size: 1.125rem;
+  background-position: right 16px center;
+  background-size: 18px;
 }
 
 .select--error {

@@ -9,7 +9,10 @@
       />
       
       <!-- Status Table -->
-      <SystemStatusTable @view-details="handleViewDetails" />
+      <SystemStatusTable 
+        @view-details="handleViewDetails"
+        @date-changed="handleDateChanged"
+      />
     </div>
   </AdminTemplate>
 </template>
@@ -18,6 +21,7 @@
 import AdminTemplate from '../templates/AdminTemplate.vue'
 import SystemMetricsCards from '../components/molecules/SystemMetricsCards.vue'
 import SystemStatusTable from '../components/molecules/SystemStatusTable.vue'
+import { getSystemMetricsByDate, getDefaultDate } from '../data/systemStatusData.js'
 
 export default {
   name: 'SystemOverviewPage',
@@ -28,10 +32,11 @@ export default {
   },
   data() {
     return {
+      selectedDate: getDefaultDate(),
       systemMetrics: {
         errorCount: 0,
-        successCount: 30,
-        storeCount: 8
+        successCount: 0,
+        storeCount: 0
       }
     }
   },
@@ -43,21 +48,40 @@ export default {
       // this.$router.push({ name: 'ExecutionDetails', params: { id: item.id } })
     },
     
-    async loadSystemMetrics() {
-      // In a real app, this would fetch from an API
+    handleDateChanged(date) {
+      // Handle date change from SystemStatusTable
+      console.log('Date changed in SystemOverviewPage:', date)
+      this.selectedDate = date
+      this.refreshDataForDate(date)
+    },
+    
+    async refreshDataForDate(date) {
+      // Refresh system metrics and table data for the selected date
+      console.log('Refreshing data for date:', date)
       try {
-        // Simulate API call
-        const response = await new Promise(resolve => {
-          setTimeout(() => {
-            resolve({
-              errorCount: 0,
-              successCount: 30,
-              storeCount: 8
-            })
-          }, 100)
-        })
-        
-        this.systemMetrics = response
+        // Get system metrics for the selected date
+        const metrics = getSystemMetricsByDate(date)
+        this.systemMetrics = {
+          errorCount: metrics.errorCount,
+          successCount: metrics.successCount,
+          storeCount: metrics.storeCount
+        }
+        console.log('Updated system metrics:', this.systemMetrics)
+      } catch (error) {
+        console.error('Failed to refresh data for date:', error)
+      }
+    },
+    
+    async loadSystemMetrics() {
+      // Load system metrics for the current selected date
+      try {
+        const metrics = getSystemMetricsByDate(this.selectedDate)
+        this.systemMetrics = {
+          errorCount: metrics.errorCount,
+          successCount: metrics.successCount,
+          storeCount: metrics.storeCount
+        }
+        console.log('Loaded system metrics:', this.systemMetrics)
       } catch (error) {
         console.error('Failed to load system metrics:', error)
       }

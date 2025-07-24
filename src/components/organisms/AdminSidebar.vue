@@ -61,11 +61,6 @@
         </li>
       </ul>
     </nav>
-    
-    <!-- Admin info section -->
-    <div class="admin-info">
-      <p>ようこそ、管理者様！</p>
-    </div>
   </div>
 </template>
 

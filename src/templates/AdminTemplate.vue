@@ -12,17 +12,18 @@
               theme="light"
               :show-text="false"
             />
-            
-            <div class="header-right">
-              <span class="admin-welcome">ようこそ、管理者様！</span>
-              <span class="current-date">{{ currentDate }}</span>
-            </div>
           </div>
         </header>
         
         <div class="page-header">
           <div class="page-header-content">
-            <h1>{{ title }}</h1>
+            <div class="page-header-left">
+              <h1>{{ title }}</h1>
+            </div>
+            <div class="page-header-right">
+              <span class="admin-welcome">ようこそ、管理者様！</span>
+              <span class="current-date">{{ currentDate }}</span>
+            </div>
           </div>
         </div>
         
@@ -166,16 +167,19 @@ export default {
 
 .page-header-content {
   padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.page-header-content h1 {
+.page-header-left h1 {
   font-size: 1.875rem;
   font-weight: 700;
   color: #1f2937;
   margin: 0;
 }
 
-.header-right {
+.page-header-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -258,9 +262,12 @@ export default {
   
   .page-header-content {
     padding: 15px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
   }
   
-  .header-right {
+  .page-header-right {
     align-items: flex-start;
     gap: 2px;
   }
@@ -273,7 +280,7 @@ export default {
     display: flex;
   }
   
-  .page-header-content h1 {
+  .page-header-left h1 {
     font-size: 1.5rem;
   }
 }
@@ -292,7 +299,7 @@ export default {
     padding: 15px 0;
   }
   
-  .page-header-content h1 {
+  .page-header-left h1 {
     font-size: 1.25rem;
   }
 }

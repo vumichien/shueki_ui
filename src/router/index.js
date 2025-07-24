@@ -9,6 +9,9 @@ import SystemRmsPage from '../pages/SystemRmsPage.vue'
 import SystemRevenueDefaultPage from '../pages/SystemRevenueDefaultPage.vue'
 import AccountPage from '../pages/AccountPage.vue'
 import AccountPasswordPage from '../pages/AccountPasswordPage.vue'
+import AdminAccountPasswordPage from '../pages/AdminAccountPasswordPage.vue'
+import AdminAccountCreatePage from '../pages/AdminAccountCreatePage.vue'
+import ClientListPage from '../pages/ClientListPage.vue'
 
 const routes = [
   {
@@ -74,6 +77,24 @@ const routes = [
     name: 'AccountPassword',
     component: AccountPasswordPage,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/clients',
+    name: 'AdminClients',
+    component: ClientListPage,
+    meta: { requiresAdminAuth: true }
+  },
+  {
+    path: '/admin/account/password',
+    name: 'AdminAccountPassword',
+    component: AdminAccountPasswordPage,
+    meta: { requiresAdminAuth: true }
+  },
+  {
+    path: '/admin/account/new',
+    name: 'AdminAccountCreate',
+    component: AdminAccountCreatePage,
+    meta: { requiresAdminAuth: true }
   }
 ]
 
