@@ -1,19 +1,7 @@
 <template>
   <div class="rich-text-editor" :class="{ 'has-error': error, 'is-disabled': disabled }">
-    <!-- Fallback textarea if QuillEditor fails to load -->
-    <textarea
-      v-if="showFallback"
-      v-model="content"
-      :placeholder="placeholder"
-      :disabled="disabled"
-      class="fallback-textarea"
-      @input="handleTextareaInput"
-    ></textarea>
-    
     <!-- QuillEditor component -->
-    <component
-      v-else-if="quillLoaded && QuillEditorComponent"
-      :is="QuillEditorComponent"
+    <QuillEditor
       v-model:content="content"
       :options="editorOptions"
       contentType="html"
@@ -23,18 +11,18 @@
       @selectionChange="onSelectionChange"
       @editorChange="onEditorChange"
     />
-    
-    <!-- Loading state -->
-    <div v-else class="loading-state">
-      <div class="loading-spinner"></div>
-      <span>エディターを読み込み中...</span>
-    </div>
   </div>
 </template>
 
 <script>
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
+
 export default {
   name: 'RichTextEditor',
+  components: {
+    QuillEditor
+  },
   props: {
     modelValue: {
       type: String,
@@ -57,10 +45,6 @@ export default {
   data() {
     return {
       content: this.modelValue,
-      quillLoaded: false,
-      showFallback: false,
-      loadingTimeout: null,
-      QuillEditorComponent: null,
       editorOptions: {
         placeholder: this.placeholder,
         readOnly: this.disabled,
@@ -90,63 +74,7 @@ export default {
       this.editorOptions.readOnly = newValue
     }
   },
-  async mounted() {
-    await this.loadQuillEditor()
-  },
-  beforeUnmount() {
-    if (this.loadingTimeout) {
-      clearTimeout(this.loadingTimeout)
-    }
-  },
   methods: {
-    async loadQuillEditor() {
-      try {
-        // Set timeout for fallback
-        this.loadingTimeout = setTimeout(() => {
-          console.warn('QuillEditor loading timeout, using fallback textarea')
-          this.showFallback = true
-        }, 5000)
-
-        // Load CSS first
-        try {
-          await import('@vueup/vue-quill/dist/vue-quill.snow.css')
-        } catch (cssError) {
-          console.warn('Failed to load Quill CSS:', cssError)
-        }
-
-        // Load QuillEditor component
-        const quillModule = await import('@vueup/vue-quill')
-        
-        if (quillModule && quillModule.QuillEditor) {
-          this.QuillEditorComponent = quillModule.QuillEditor
-          this.quillLoaded = true
-          console.log('QuillEditor loaded successfully')
-        } else {
-          throw new Error('QuillEditor not found in module')
-        }
-
-        // Clear timeout if successful
-        if (this.loadingTimeout) {
-          clearTimeout(this.loadingTimeout)
-          this.loadingTimeout = null
-        }
-
-      } catch (error) {
-        console.error('Failed to load QuillEditor:', error)
-        this.showFallback = true
-        
-        if (this.loadingTimeout) {
-          clearTimeout(this.loadingTimeout)
-          this.loadingTimeout = null
-        }
-      }
-    },
-    
-    handleTextareaInput(event) {
-      this.content = event.target.value
-      this.$emit('change', this.content)
-    },
-    
     onEditorReady(quill) {
       console.log('Editor is ready', quill)
     },
@@ -175,68 +103,6 @@ export default {
   display: flex;
   flex-direction: column;
   position: relative;
-}
-
-.loading-state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: #f8f9fa;
-  color: #6c757d;
-  gap: 12px;
-}
-
-.loading-spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #e9ecef;
-  border-top: 2px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.fallback-textarea {
-  min-height: 120px;
-  padding: 12px 16px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-family: inherit;
-  line-height: 1.5;
-  resize: vertical;
-  transition: border-color 0.3s ease;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.fallback-textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-}
-
-.fallback-textarea:disabled {
-  background: #f8f9fa;
-  color: #6c757d;
-  cursor: not-allowed;
-}
-
-/* Error state */
-.has-error .fallback-textarea {
-  border-color: #dc3545;
-}
-
-.has-error .fallback-textarea:focus {
-  border-color: #dc3545;
-  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.1);
 }
 
 /* Existing Quill styles */
@@ -347,12 +213,6 @@ export default {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .fallback-textarea {
-    min-height: 100px;
-    font-size: 0.9rem;
-    padding: 10px 12px;
-  }
-  
   .rich-text-editor :deep(.ql-editor) {
     min-height: 100px;
     height: 100%;

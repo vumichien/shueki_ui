@@ -18,10 +18,8 @@
 <script>
 import AnnualRevenueTemplate from '../templates/AnnualRevenueTemplate.vue'
 import MetricsCards from '../components/molecules/MetricsCards.vue'
+import RevenueChart from '../components/organisms/RevenueChart.vue'
 import DataTable from '../components/organisms/DataTable.vue'
-
-// Lazy load the heavy chart component
-const RevenueChart = () => import('../components/organisms/RevenueChart.vue')
 
 export default {
   name: 'RevenueReportPage',

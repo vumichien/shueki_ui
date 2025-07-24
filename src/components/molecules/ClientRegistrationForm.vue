@@ -418,12 +418,10 @@ import Radio from '../atoms/Radio.vue'
 import Button from '../atoms/Button.vue'
 import Icon from '../atoms/Icon.vue'
 import DatePicker from '../atoms/DatePicker.vue'
+import RichTextEditor from '../atoms/RichTextEditor.vue'
 import NotificationPopup from './NotificationPopup.vue'
 import { validateEmail } from '../../data/userData.js'
 import { addNewClient } from '../../data/clientData.js'
-
-// Lazy load the heavy rich text editor component
-const RichTextEditor = () => import('../atoms/RichTextEditor.vue')
 
 export default {
   name: 'ClientRegistrationForm',

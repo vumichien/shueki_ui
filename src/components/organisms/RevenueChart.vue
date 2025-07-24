@@ -14,16 +14,38 @@
       </label>
     </div>
     <div class="chart-container">
-      <canvas ref="chartCanvas" v-if="shouldShowChart"></canvas>
+      <canvas ref="chartCanvas"></canvas>
     </div>
   </div>
 </template>
 
 <script>
-import { Chart, registerables } from 'chart.js'
+import {
+  Chart,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  LineController,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+} from 'chart.js'
 import { financialData, calculateFinancialMetrics } from '../../data/financialData.js'
 
-Chart.register(...registerables)
+// Register Chart.js components explicitly
+Chart.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  LineController,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+)
 
 export default {
   name: 'RevenueChart',
@@ -36,10 +58,8 @@ export default {
   data() {
     return {
       chart: null,
-      lastDataString: '', // Track data changes
-      isMounted: false, // Track component mount state
-      shouldShowChart: false, // Control canvas rendering
-      persistedData: null, // Store filtered data
+      persistedData: null,
+      isMounted: false,
       chartColors: {
         sales: '#3b82f6',
         profit: '#10b981',
@@ -52,12 +72,11 @@ export default {
         { key: 'advertising', label: '広告費 (円)' },
         { key: 'promotion', label: '販売促進費 (円)' }
       ],
-      selectedItems: ['sales', 'profit', 'advertising', 'promotion'] // mặc định chọn hết
+      selectedItems: ['sales', 'profit', 'advertising', 'promotion']
     }
   },
   computed: {
     currentData() {
-      // Priority: props > persisted > default
       const data = this.data || this.persistedData || financialData
       console.log('RevenueChart currentData:', data)
       return data
@@ -72,44 +91,48 @@ export default {
           label: '売上 (円)',
           data: this.currentData.salesData || [],
           borderColor: this.chartColors.sales,
-          backgroundColor: this.chartColors.sales + '30',
+          backgroundColor: this.chartColors.sales + '20',
           fill: true,
-          tension: 0.1,
-          pointRadius: 5,
-          pointHoverRadius: 7
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          tension: 0.1
         },
         {
           key: 'profit',
           label: '営業利益 (円)',
           data: this.calculatedMetrics.operatingProfitData || [],
           borderColor: this.chartColors.profit,
-          backgroundColor: this.chartColors.profit + '30',
+          backgroundColor: this.chartColors.profit + '20',
           fill: true,
-          tension: 0.1,
-          pointRadius: 5,
-          pointHoverRadius: 7
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          tension: 0.1
         },
         {
           key: 'advertising',
           label: '広告費 (円)',
           data: this.currentData.advertisingData || [],
           borderColor: this.chartColors.advertising,
-          backgroundColor: this.chartColors.advertising + '30',
+          backgroundColor: this.chartColors.advertising + '20',
           fill: true,
-          tension: 0.1,
-          pointRadius: 5,
-          pointHoverRadius: 7
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          tension: 0.1
         },
         {
           key: 'promotion',
           label: '販売促進費 (円)',
           data: this.currentData.salesPromotionData || [],
           borderColor: this.chartColors.promotion,
-          backgroundColor: this.chartColors.promotion + '30',
+          backgroundColor: this.chartColors.promotion + '20',
           fill: true,
-          tension: 0.1,
-          pointRadius: 5,
-          pointHoverRadius: 7
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          tension: 0.1
         }
       ]
       return {
@@ -118,29 +141,38 @@ export default {
       }
     },
     chartOptions() {
+      const isMobile = window.innerWidth <= 768
+      
       return {
         responsive: true,
         maintainAspectRatio: false,
-        animation: {
-          duration: 0 // Disable animation to prevent context issues
-        },
         plugins: {
           legend: {
             display: true,
-            position: 'top',
-            align: 'end',
+            position: isMobile ? 'bottom' : 'right',
+            align: 'center',
+            onClick: null, // Disable legend click
             labels: {
-              usePointStyle: false,
-              padding: 20,
+              usePointStyle: true,
+              padding: isMobile ? 10 : 15,
               font: {
-                size: 12,
-                weight: '500'
+                size: isMobile ? 11 : 12
               },
-              color: '#6b7280'
-            },
-            onClick: null // Tắt click legend
+              generateLabels: function(chart) {
+                const original = Chart.defaults.plugins.legend.labels.generateLabels
+                const labels = original.call(this, chart)
+                
+                // Disable click functionality by removing the hidden property handling
+                labels.forEach(label => {
+                  label.hidden = false // Always show as visible
+                })
+                
+                return labels
+              }
+            }
           },
           tooltip: {
+            enabled: true,
             mode: 'index',
             intersect: false,
             callbacks: {
@@ -156,38 +188,17 @@ export default {
             display: true,
             title: {
               display: true,
-              text: '日付',
-              font: {
-                size: 12,
-                weight: '500'
-              },
-              color: '#6b7280'
-            },
-            grid: {
-              display: true,
-              color: '#e5e7eb'
-            },
-            ticks: {
-              color: '#6b7280'
+              text: '日付'
             }
           },
           y: {
             display: true,
+            beginAtZero: true,
             title: {
               display: true,
-              text: '金額 (円)',
-              font: {
-                size: 12,
-                weight: '500'
-              },
-              color: '#6b7280'
-            },
-            grid: {
-              display: true,
-              color: '#e5e7eb'
+              text: '金額 (円)'
             },
             ticks: {
-              color: '#6b7280',
               callback: function(value) {
                 return '¥' + new Intl.NumberFormat('ja-JP').format(value)
               }
@@ -198,12 +209,6 @@ export default {
           mode: 'nearest',
           axis: 'x',
           intersect: false
-        },
-        elements: {
-          point: {
-            radius: 4,
-            hoverRadius: 6
-          }
         }
       }
     }
@@ -211,152 +216,203 @@ export default {
   mounted() {
     console.log('RevenueChart mounted')
     this.isMounted = true
-    this.shouldShowChart = true
-    // Load persisted data first
     this.loadPersistedData()
-    this.$nextTick(() => {
-      // Add small delay to ensure DOM is fully ready
-      setTimeout(() => {
+    
+    // Use a small delay to ensure DOM is fully ready
+    setTimeout(() => {
+      if (this.isMounted) {
         this.initChart()
-      }, 100)
-    })
-    console.log('RevenueChart mounted with data:', {
-      props: this.data,
-      persisted: this.persistedData,
-      current: this.currentData
-    })
+      }
+    }, 50)
   },
   beforeUnmount() {
     console.log('RevenueChart beforeUnmount')
     this.isMounted = false
-    this.shouldShowChart = false
-    this.destroyChart()
-  },
-  activated() {
-    // For keep-alive components
-    console.log('RevenueChart activated')
-    if (this.isMounted && this.shouldShowChart) {
-      this.$nextTick(() => {
-        setTimeout(() => {
-          if (!this.chart) {
-            this.initChart()
-          }
-        }, 100)
-      })
-    }
-  },
-  deactivated() {
-    // For keep-alive components
-    console.log('RevenueChart deactivated')
     this.destroyChart()
   },
   watch: {
     data: {
       handler(newData) {
         console.log('RevenueChart data watcher triggered:', newData)
-        // Only proceed if component is mounted and should show chart
-        if (!this.isMounted || !this.shouldShowChart) {
-          console.log('Component not ready, skipping chart update')
-          return
-        }
-        // Save to localStorage if it's not the default data
         if (newData && newData !== financialData) {
           this.savePersistedData(newData)
         }
-        // Check if data actually changed
-        const newDataString = JSON.stringify(newData)
-        if (newDataString !== this.lastDataString) {
-          this.lastDataString = newDataString
-          // Use nextTick and timeout to ensure DOM is ready
-          this.$nextTick(() => {
-            setTimeout(() => {
-              if (this.chart && this.isChartValid()) {
-                this.updateChart()
-              } else {
-                this.initChart()
-              }
-            }, 50)
-          })
-        }
+        this.$nextTick(() => {
+          this.updateChart()
+        })
       },
-      immediate: false, // Don't trigger on initial mount
       deep: true
     },
     selectedItems() {
-      this.updateChart()
+      this.$nextTick(() => {
+        this.updateChart()
+      })
     }
   },
   methods: {
-    isChartValid() {
-      try {
-        return this.chart && 
-               this.chart.ctx && 
-               this.chart.canvas && 
-               this.$refs.chartCanvas &&
-               !this.chart.ctx.isContextLost()
-      } catch (error) {
-        console.warn('Chart validation failed:', error)
-        return false
-      }
-    },
     initChart() {
       console.log('RevenueChart initChart called')
-      if (!this.shouldShowChart || !this.isMounted) {
-        console.log('Chart not ready for initialization')
+      
+      if (!this.isMounted) {
+        console.log('Component not mounted, skipping chart initialization')
         return
       }
+      
       if (!this.$refs.chartCanvas) {
         console.error('Chart canvas ref not found')
         return
       }
-      // Destroy existing chart
-      this.destroyChart()
-      try {
-        const canvas = this.$refs.chartCanvas
-        const ctx = canvas.getContext('2d')
-        if (!ctx) {
-          console.error('Failed to get canvas context')
-          return
-        }
-        console.log('Creating chart with data:', this.chartData)
-        this.chart = new Chart(ctx, {
-          type: 'line',
-          data: JSON.parse(JSON.stringify(this.chartData)), // Deep clone to prevent reference issues
-          options: this.chartOptions
-        })
-        console.log('Chart created successfully')
-      } catch (error) {
-        console.error('Error initializing chart:', error)
-        this.chart = null
+
+      // Validate data before creating chart
+      if (!this.chartData || !this.chartData.labels || !this.chartData.datasets) {
+        console.error('Invalid chart data:', this.chartData)
+        return
       }
+
+      if (this.chartData.labels.length === 0) {
+        console.warn('No data labels available for chart')
+        return
+      }
+
+      this.destroyChart()
+
+      // Wait for next tick to ensure DOM is ready
+      this.$nextTick(() => {
+        try {
+          const canvas = this.$refs.chartCanvas
+          
+          if (!canvas) {
+            console.error('Canvas element not found after nextTick')
+            return
+          }
+
+          // Ensure canvas has proper dimensions
+          if (canvas.offsetWidth === 0 || canvas.offsetHeight === 0) {
+            console.warn('Canvas has zero dimensions, retrying...')
+            setTimeout(() => this.initChart(), 100)
+            return
+          }
+
+          const ctx = canvas.getContext('2d')
+          
+          if (!ctx) {
+            console.error('Failed to get canvas context')
+            return
+          }
+
+          // Validate context is not lost
+          if (ctx.isContextLost && ctx.isContextLost()) {
+            console.error('Canvas context is lost')
+            return
+          }
+
+          console.log('Creating chart with data:', this.chartData)
+          console.log('Chart options:', this.chartOptions)
+          
+          // Ensure all datasets have valid data
+          const validDatasets = this.chartData.datasets.filter(dataset => {
+            return dataset && dataset.data && Array.isArray(dataset.data) && dataset.data.length > 0
+          })
+
+          if (validDatasets.length === 0) {
+            console.warn('No valid datasets available for chart')
+            return
+          }
+
+          // Log each dataset to check for issues
+          validDatasets.forEach((dataset, index) => {
+            console.log(`Dataset ${index}:`, {
+              label: dataset.label,
+              data: dataset.data,
+              borderColor: dataset.borderColor,
+              backgroundColor: dataset.backgroundColor
+            })
+          })
+
+          const chartConfig = {
+            type: 'line',
+            data: {
+              labels: this.chartData.labels,
+              datasets: validDatasets
+            },
+            options: {
+              ...this.chartOptions,
+              // Disable animations to prevent context issues
+              animation: false,
+              responsive: true,
+              maintainAspectRatio: false
+            }
+          }
+
+          console.log('Final chart config:', chartConfig)
+
+          this.chart = new Chart(ctx, chartConfig)
+          
+          console.log('Chart created successfully')
+        } catch (error) {
+          console.error('Error initializing chart:', error)
+          this.chart = null
+        }
+      })
     },
+    
     updateChart() {
       console.log('RevenueChart updateChart called')
-      if (!this.isChartValid()) {
-        console.log('Chart not valid, reinitializing...')
+      
+      if (!this.chart) {
+        console.log('No chart instance, initializing new chart')
         this.initChart()
         return
       }
+
+      // Check if chart context is still valid
+      if (this.chart.ctx && this.chart.ctx.isContextLost && this.chart.ctx.isContextLost()) {
+        console.warn('Chart context lost, reinitializing chart')
+        this.initChart()
+        return
+      }
+
       try {
         console.log('Updating chart with new data:', this.chartData)
-        // Deep clone data to prevent reference issues
-        const newData = JSON.parse(JSON.stringify(this.chartData))
-        // Update chart data
-        this.chart.data.labels = newData.labels
-        this.chart.data.datasets = newData.datasets
-        // Update chart
+        
+        // Validate data before updating
+        if (!this.chartData || !this.chartData.labels || !this.chartData.datasets) {
+          console.error('Invalid chart data for update:', this.chartData)
+          return
+        }
+
+        const validDatasets = this.chartData.datasets.filter(dataset => {
+          return dataset && dataset.data && Array.isArray(dataset.data) && dataset.data.length > 0
+        })
+
+        if (validDatasets.length === 0) {
+          console.warn('No valid datasets for chart update')
+          return
+        }
+        
+        this.chart.data.labels = this.chartData.labels
+        this.chart.data.datasets = validDatasets
         this.chart.update('none') // Use 'none' mode to skip animations
+        
         console.log('Chart updated successfully')
       } catch (error) {
         console.error('Error updating chart:', error)
-        // If update fails, try to reinitialize
+        console.log('Attempting to reinitialize chart')
         this.initChart()
       }
     },
+    
     destroyChart() {
       if (this.chart) {
         try {
           console.log('Destroying chart')
+          
+          // Stop any ongoing animations
+          if (this.chart.stop) {
+            this.chart.stop()
+          }
+          
+          // Destroy the chart
           this.chart.destroy()
         } catch (error) {
           console.error('Error destroying chart:', error)
@@ -365,6 +421,7 @@ export default {
         }
       }
     },
+    
     loadPersistedData() {
       try {
         const persistedDataStr = localStorage.getItem('revenueChart_filteredData')
@@ -377,6 +434,7 @@ export default {
         this.clearPersistedData()
       }
     },
+    
     savePersistedData(data) {
       try {
         localStorage.setItem('revenueChart_filteredData', JSON.stringify(data))
@@ -386,12 +444,13 @@ export default {
         console.warn('Error saving persisted chart data:', error)
       }
     },
+    
     clearPersistedData() {
       localStorage.removeItem('revenueChart_filteredData')
       this.persistedData = null
       console.log('Cleared persisted chart data')
     },
-    // Public method to clear filter
+    
     clearFilter() {
       this.clearPersistedData()
       console.log('RevenueChart filter cleared')
@@ -443,11 +502,14 @@ export default {
   width: 100%;
   height: 400px;
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .chart-container canvas {
   width: 100% !important;
   height: 100% !important;
+  max-width: 100% !important;
 }
 
 /* Responsive */
@@ -471,6 +533,7 @@ export default {
     height: 350px;
     width: 100%;
     overflow: hidden;
+    flex-direction: column;
   }
 }
 
@@ -489,4 +552,4 @@ export default {
     height: 300px;
   }
 }
-</style> 
+</style>
