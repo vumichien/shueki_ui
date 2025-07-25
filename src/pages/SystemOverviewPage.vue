@@ -31,8 +31,9 @@ export default {
     SystemStatusTable
   },
   data() {
+    const defaultDate = getDefaultDate()
     return {
-      selectedDate: getDefaultDate(),
+      selectedDate: defaultDate,
       systemMetrics: {
         errorCount: 0,
         successCount: 0,

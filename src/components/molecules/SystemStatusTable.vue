@@ -6,12 +6,15 @@
       </div>
       <div class="table-actions">
         <div class="date-filter">
-          <DatePicker 
-            v-model="selectedDate"
-            label="実施日"
-            :availableDates="availableDates"
-            @change="handleDateChange"
-          />
+          <div class="date-input-group">
+            <span class="date-label">実施日</span>
+            <Input 
+              v-model="selectedDate" 
+              type="date"
+              class="date-input"
+              @input="handleDateChange"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -56,17 +59,18 @@
 </template>
 
 <script>
-import DatePicker from '../atoms/DatePicker.vue'
+import Input from '../atoms/Input.vue'
 import { getSystemStatusDataByDate, getDefaultDate, getAvailableDates } from '../../data/systemStatusData.js'
 
 export default {
   name: 'SystemStatusTable',
   components: {
-    DatePicker
+    Input
   },
   data() {
+    const defaultDate = getDefaultDate()
     return {
-      selectedDate: getDefaultDate(),
+      selectedDate: this.formatDateForInput(defaultDate),
       tableData: []
     }
   },
@@ -76,24 +80,37 @@ export default {
     }
   },
   methods: {
+    formatDateForInput(date) {
+      // Convert Date object to YYYY-MM-DD format for HTML date input
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    },
+    
     viewDetails(item) {
       // Handle view details action
       console.log('View details for:', item)
       this.$emit('view-details', item)
     },
     
-    handleDateChange(date) {
-      console.log('Date changed to:', date)
-      this.selectedDate = date
-      this.loadTableDataForDate(date)
-      this.$emit('date-changed', date)
+    handleDateChange(event) {
+      const dateString = event.target.value
+      console.log('Date changed to:', dateString)
+      this.selectedDate = dateString
+      const dateObject = new Date(dateString)
+      console.log('Converted to Date object:', dateObject)
+      this.loadTableDataForDate(dateObject)
+      this.$emit('date-changed', dateObject)
     },
     
     loadTableDataForDate(date) {
       // Load table data for the selected date
+      console.log('Loading table data for date:', date)
       const executions = getSystemStatusDataByDate(date)
       this.tableData = executions
       console.log(`Loaded ${executions.length} executions for date:`, date)
+      console.log('Table data:', this.tableData)
     },
     
     filterTableDataByDate(date) {
@@ -104,7 +121,10 @@ export default {
   },
   mounted() {
     // Load initial data for the selected date
-    this.loadTableDataForDate(this.selectedDate)
+    console.log('Component mounted, selectedDate:', this.selectedDate)
+    const initialDate = new Date(this.selectedDate)
+    console.log('Initial date object:', initialDate)
+    this.loadTableDataForDate(initialDate)
   },
   emits: ['view-details', 'date-changed']
 }
@@ -146,6 +166,24 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.date-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.date-input {
+  width: 150px;
 }
 
 

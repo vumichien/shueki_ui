@@ -781,12 +781,28 @@ export const systemStatusData = [
 
 // Helper function to get data for a specific date
 export const getSystemStatusDataByDate = (date) => {
-  const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  // Ensure we have a proper Date object
+  const targetDate = date instanceof Date ? date : new Date(date)
+  
+  // Normalize the target date to remove time components
+  const targetYear = targetDate.getFullYear()
+  const targetMonth = targetDate.getMonth()
+  const targetDay = targetDate.getDate()
+  
+  console.log('Looking for date:', targetYear, targetMonth, targetDay)
   
   const dataForDate = systemStatusData.find(data => {
-    const dataDate = new Date(data.date.getFullYear(), data.date.getMonth(), data.date.getDate())
-    return dataDate.getTime() === targetDate.getTime()
+    const dataDate = data.date
+    const dataYear = dataDate.getFullYear()
+    const dataMonth = dataDate.getMonth()
+    const dataDay = dataDate.getDate()
+    
+    console.log('Comparing with:', dataYear, dataMonth, dataDay)
+    
+    return dataYear === targetYear && dataMonth === targetMonth && dataDay === targetDay
   })
+  
+  console.log('Found data:', dataForDate ? dataForDate.executions.length : 0, 'executions')
   
   return dataForDate ? dataForDate.executions : []
 }
@@ -815,5 +831,10 @@ export const getSystemMetricsByDate = (date) => {
 // Helper function to get default date (most recent)
 export const getDefaultDate = () => {
   const availableDates = getAvailableDates()
-  return availableDates.length > 0 ? availableDates[0] : new Date()
+  if (availableDates.length > 0) {
+    // Sort dates in descending order and return the most recent one
+    const sortedDates = [...availableDates].sort((a, b) => b.getTime() - a.getTime())
+    return sortedDates[0]
+  }
+  return new Date()
 } 

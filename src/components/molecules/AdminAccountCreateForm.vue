@@ -82,12 +82,13 @@
               <span class="label-text">生年月日</span>
             </div>
             <div class="form-content">
-              <BirthdayPicker 
-                v-model="formData.birthDate"
-                :startYear="1950"
-                :endYear="2020"
-                class="birthday-picker-field"
-              />
+              <div class="date-input-group">
+                <Input 
+                  v-model="formData.birthDate" 
+                  type="date"
+                  class="date-input"
+                />
+              </div>
             </div>
           </div>
           
@@ -182,7 +183,6 @@ import Select from '../atoms/Select.vue'
 import Radio from '../atoms/Radio.vue'
 import Button from '../atoms/Button.vue'
 import Icon from '../atoms/Icon.vue'
-import BirthdayPicker from '../atoms/BirthdayPicker.vue'
 import NotificationPopup from './NotificationPopup.vue'
 import { validateEmail } from '../../data/userData.js'
 
@@ -194,7 +194,6 @@ export default {
     Radio,
     Button,
     Icon,
-    BirthdayPicker,
     NotificationPopup
   },
   data() {
@@ -208,7 +207,7 @@ export default {
         lastNameKana: '',
         loginId: 'example@detomo.co.jp',
         password: 'XXXXXXXXXXX',
-        birthDate: null,
+        birthDate: '1990-01-01',
         gender: '女性',
         email: 'example@detomo.co.jp',
         phoneNumber: '000-0000-0000',
@@ -346,7 +345,7 @@ export default {
         lastNameKana: '',
         loginId: 'example@detomo.co.jp',
         password: 'XXXXXXXXXXX',
-        birthDate: null,
+        birthDate: '1990-01-01',
         gender: '女性',
         email: 'example@detomo.co.jp',
         phoneNumber: '000-0000-0000',
@@ -490,8 +489,15 @@ export default {
   color: #333;
 }
 
-.birthday-picker-field {
-  max-width: 400px;
+.date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.date-input {
+  width: 150px;
 }
 
 .gender-select {

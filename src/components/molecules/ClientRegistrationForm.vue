@@ -245,12 +245,13 @@
             <span class="label-text">利用開始日</span>
           </div>
           <div class="form-content">
-            <DatePicker 
-              v-model="formData.rakutenStartDate"
-              placeholder="2025年06月01日"
-              :showLabel="false"
-              class="form-datepicker"
-            />
+            <div class="date-input-group">
+              <Input 
+                v-model="formData.rakutenStartDate" 
+                type="date"
+                class="date-input"
+              />
+            </div>
           </div>
         </div>
         
@@ -348,12 +349,13 @@
             <span class="label-text">利用開始日</span>
           </div>
           <div class="form-content">
-            <DatePicker 
-              v-model="formData.amazonStartDate"
-              placeholder="2025年06月01日"
-              :showLabel="false"
-              class="form-datepicker"
-            />
+            <div class="date-input-group">
+              <Input 
+                v-model="formData.amazonStartDate" 
+                type="date"
+                class="date-input"
+              />
+            </div>
           </div>
         </div>
         
@@ -417,7 +419,6 @@ import Select from '../atoms/Select.vue'
 import Radio from '../atoms/Radio.vue'
 import Button from '../atoms/Button.vue'
 import Icon from '../atoms/Icon.vue'
-import DatePicker from '../atoms/DatePicker.vue'
 import RichTextEditor from '../atoms/RichTextEditor.vue'
 import NotificationPopup from './NotificationPopup.vue'
 import { validateEmail } from '../../data/userData.js'
@@ -431,7 +432,6 @@ export default {
     Radio,
     Button,
     Icon,
-    DatePicker,
     RichTextEditor,
     NotificationPopup
   },
@@ -457,10 +457,16 @@ export default {
         rakutenPasswordStage1: '',
         rakutenLoginStage2: '',
         rakutenPasswordStage2: '',
-        accountStatus: 'active',
-        startDate: '2025年06月01日',
-        contractStatus: '本契約',
-        notes: ''
+        rakutenAccountStatus: 'active',
+        rakutenStartDate: '2025-01-02',
+        rakutenContractStatus: '本契約',
+        rakutenNotes: '',
+        amazonLogin: '',
+        amazonPassword: '',
+        amazonAccountStatus: 'active',
+        amazonStartDate: '2025-01-02',
+        amazonContractStatus: '本契約',
+        amazonNotes: ''
       },
       errors: {
         clientName: '',
@@ -830,8 +836,15 @@ export default {
   max-width: 200px;
 }
 
-.form-datepicker {
-  max-width: 200px;
+.date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.date-input {
+  width: 150px;
 }
 
 .radio-content {

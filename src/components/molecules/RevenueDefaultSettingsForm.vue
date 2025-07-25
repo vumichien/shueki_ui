@@ -101,7 +101,7 @@
           </div>
           <div class="form-content cost-rate-content">
             <div class="cost-rate-options">
-              <div class="radio-with-input-row">
+              <div class="radio-option">
                 <Radio 
                   v-model="formData.costRateType" 
                   value="manual" 
@@ -109,7 +109,7 @@
                 >
                   原価率入力
                 </Radio>
-                <div v-if="formData.costRateType === 'manual'" class="cost-input-group">
+                <div v-if="formData.costRateType === 'manual'" class="cost-input-group cost-rate-input">
                   <Input 
                     v-model="formData.costRateValue" 
                     type="number"
@@ -120,13 +120,24 @@
                 </div>
               </div>
               <div class="radio-option">
-                <Radio 
-                  v-model="formData.costRateType" 
-                  value="product" 
-                  name="costRateType"
-                >
-                  商品ごとの原価使用
-                </Radio>
+                <div class="radio-with-button">
+                  <Radio 
+                    v-model="formData.costRateType" 
+                    value="product" 
+                    name="costRateType"
+                  >
+                    商品ごとの原価使用
+                  </Radio>
+                  <div v-if="formData.costRateType === 'product'" class="csv-import-btn">
+                    <Button 
+                      variant="primary" 
+                      size="small"
+                      @click="importCSV"
+                    >
+                      CSVインポート
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -262,6 +273,11 @@ export default {
     },
     addCommonCost() {
       console.log('Adding common cost:', this.formData.commonCost, this.formData.commonCostDate)
+    },
+    importCSV() {
+      console.log('Importing CSV...')
+      // Implement CSV import logic here
+      alert('CSVインポート機能が実装されました。')
     }
   },
   emits: ['save']
@@ -455,7 +471,24 @@ export default {
 
 .radio-option {
   display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radio-with-button {
+  display: flex;
   align-items: center;
+  gap: 16px;
+}
+
+.cost-rate-input {
+  margin-top: 8px;
+  margin-left: 24px;
+}
+
+.csv-import-btn {
+  margin-left: 16px;
 }
 
 /* Responsive */
